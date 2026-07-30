@@ -34,7 +34,7 @@ func main() {
 	flag.Parse()
 
 	opts := providerserver.ServeOpts{
-		Address: "registry.opentofu.org/dpkass/railway",
+		Address: "registry.opentofu.org/aether-incorporated/railway",
 		Debug:   debug,
 	}
 
