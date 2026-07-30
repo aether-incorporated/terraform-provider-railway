@@ -1,4 +1,4 @@
-module github.com/terraform-community-providers/terraform-provider-railway
+module github.com/aether-incorporated/terraform-provider-railway
 
 go 1.23.0
 

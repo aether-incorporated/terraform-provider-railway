@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/aether-incorporated/terraform-provider-railway/internal/railway"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
-	"github.com/terraform-community-providers/terraform-provider-railway/internal/railway"
 )
 
 func TestExpandServiceInstanceEnvironmentPatchPreservesRegistryAndRemovesRegions(t *testing.T) {

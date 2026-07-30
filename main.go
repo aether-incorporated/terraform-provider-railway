@@ -5,8 +5,8 @@ import (
 	"flag"
 	"log"
 
+	"github.com/aether-incorporated/terraform-provider-railway/internal/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/terraform-community-providers/terraform-provider-railway/internal/provider"
 )
 
 // Run "go generate" to format example terraform files and generate the docs for the registry/website

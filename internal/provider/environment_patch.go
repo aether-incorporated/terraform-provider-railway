@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/terraform-community-providers/terraform-provider-railway/internal/railway"
+	"github.com/aether-incorporated/terraform-provider-railway/internal/railway"
 )
 
 const (
