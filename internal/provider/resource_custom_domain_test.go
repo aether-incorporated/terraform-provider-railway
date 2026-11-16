@@ -10,7 +10,8 @@ import (
 
 func TestAccCustomDomainResourceDefault(t *testing.T) {
 	// Custom domains are unique across Railway, so each run attaches a fresh one.
-	domain := "tf-acc-" + acctest.RandStringFromCharSet(8, acctest.CharSetAlphaNum) + ".example.com"
+	hostLabel := "tf-acc-" + acctest.RandStringFromCharSet(8, acctest.CharSetAlphaNum)
+	domain := hostLabel + ".example.com"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -26,7 +27,7 @@ func TestAccCustomDomainResourceDefault(t *testing.T) {
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "service_id", "railway_service.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "project_id", "railway_environment.fixture", "project_id"),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", "terraform"),
+					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", hostLabel),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "zone", "example.com"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "dns_record_value"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "verification_host_label"),
@@ -50,7 +51,7 @@ func TestAccCustomDomainResourceDefault(t *testing.T) {
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "service_id", "railway_service.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "project_id", "railway_environment.fixture", "project_id"),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", "terraform"),
+					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", hostLabel),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "zone", "example.com"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "dns_record_value"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "verification_host_label"),
@@ -67,7 +68,7 @@ func TestAccCustomDomainResourceDefault(t *testing.T) {
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "service_id", "railway_service.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "project_id", "railway_environment.fixture", "project_id"),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", "terraform"),
+					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", hostLabel),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "zone", "example.com"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "dns_record_value"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "verification_host_label"),
@@ -88,7 +89,8 @@ func TestAccCustomDomainResourceDefault(t *testing.T) {
 
 func TestAccCustomDomainResourceNonDefault(t *testing.T) {
 	// Custom domains are unique across Railway, so each run attaches a fresh one.
-	domain := "tf-acc-" + acctest.RandStringFromCharSet(8, acctest.CharSetAlphaNum) + ".example.com"
+	hostLabel := "tf-acc-" + acctest.RandStringFromCharSet(8, acctest.CharSetAlphaNum)
+	domain := hostLabel + ".example.com"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -104,7 +106,7 @@ func TestAccCustomDomainResourceNonDefault(t *testing.T) {
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "service_id", "railway_service.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "project_id", "railway_environment.fixture", "project_id"),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", "terraform"),
+					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", hostLabel),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "zone", "example.com"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "dns_record_value"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "verification_host_label"),
@@ -128,7 +130,7 @@ func TestAccCustomDomainResourceNonDefault(t *testing.T) {
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "service_id", "railway_service.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "project_id", "railway_environment.fixture", "project_id"),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", "terraform"),
+					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", hostLabel),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "zone", "example.com"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "dns_record_value"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "verification_host_label"),
@@ -145,7 +147,7 @@ func TestAccCustomDomainResourceNonDefault(t *testing.T) {
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "service_id", "railway_service.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "project_id", "railway_environment.fixture", "project_id"),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", "terraform"),
+					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", hostLabel),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "zone", "example.com"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "dns_record_value"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "verification_host_label"),
@@ -165,7 +167,7 @@ func TestAccCustomDomainResourceNonDefault(t *testing.T) {
 }
 
 func testAccCustomDomainResourceConfigDefault(name string) string {
-	return testAccFixtureConfig() + fmt.Sprintf(`
+	return testAccFixtureServiceConfig() + fmt.Sprintf(`
 resource "railway_custom_domain" "test" {
   domain = "%s"
   environment_id = railway_environment.fixture.id
@@ -175,7 +177,7 @@ resource "railway_custom_domain" "test" {
 }
 
 func testAccCustomDomainResourceConfigNonDefault(name string) string {
-	return testAccFixtureConfig() + fmt.Sprintf(`
+	return testAccFixtureServiceConfig() + fmt.Sprintf(`
 resource "railway_custom_domain" "test" {
   domain = "%s"
   environment_id = railway_environment.fixture.id

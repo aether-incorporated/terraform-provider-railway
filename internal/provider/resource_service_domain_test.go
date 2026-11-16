@@ -115,7 +115,7 @@ func testAccDeleteServiceDomain(state *terraform.State) error {
 }
 
 func testAccServiceDomainResourceConfigDefault(name string) string {
-	return testAccFixtureConfig() + fmt.Sprintf(`
+	return testAccFixtureServiceConfig() + fmt.Sprintf(`
 resource "railway_service_domain" "test" {
   subdomain = "%s"
   environment_id = railway_environment.fixture.id

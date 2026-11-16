@@ -46,20 +46,26 @@ func testAccPreCheck(t *testing.T) {
 	}
 }
 
-// testAccFixtureConfig declares a throwaway environment in the shared project and one service
-// in it, for tests of resources that attach to a service.
+// testAccFixtureConfig declares a throwaway environment in the shared project.
 func testAccFixtureConfig() string {
 	return fmt.Sprintf(`
 resource "railway_environment" "fixture" {
   name       = "%s"
   project_id = "%s"
 }
+`, testAccFixtureEnvironmentName, testAccProjectId)
+}
 
+// testAccFixtureServiceConfig adds a service to the fixture environment, for tests of
+// resources that attach to one. Railway caps new accounts at 25 new services a day, so tests
+// that do not attach to a service use testAccFixtureConfig instead.
+func testAccFixtureServiceConfig() string {
+	return testAccFixtureConfig() + `
 resource "railway_service" "fixture" {
   name       = "fixture"
   project_id = railway_environment.fixture.project_id
 }
-`, testAccFixtureEnvironmentName, testAccProjectId)
+`
 }
 
 // fillFixtureTemplate replaces `{project}`, `{environment}`, `{environment_name}` and
@@ -69,16 +75,21 @@ func fillFixtureTemplate(state *terraform.State, template string) (string, error
 	if !ok {
 		return "", fmt.Errorf("fixture environment is missing from state")
 	}
-	service, ok := state.RootModule().Resources["railway_service.fixture"]
-	if !ok {
-		return "", fmt.Errorf("fixture service is missing from state")
+
+	serviceId := ""
+	if strings.Contains(template, "{service}") {
+		service, ok := state.RootModule().Resources["railway_service.fixture"]
+		if !ok {
+			return "", fmt.Errorf("fixture service is missing from state")
+		}
+		serviceId = service.Primary.ID
 	}
 
 	replacer := strings.NewReplacer(
 		"{project}", environment.Primary.Attributes["project_id"],
 		"{environment_name}", environment.Primary.Attributes["name"],
 		"{environment}", environment.Primary.ID,
-		"{service}", service.Primary.ID,
+		"{service}", serviceId,
 	)
 	return replacer.Replace(template), nil
 }

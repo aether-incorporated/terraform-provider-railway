@@ -50,7 +50,7 @@ func TestAccTcpProxyResourceDefault(t *testing.T) {
 }
 
 func testAccTcpProxyResourceConfigDefault(port int) string {
-	return testAccFixtureConfig() + fmt.Sprintf(`
+	return testAccFixtureServiceConfig() + fmt.Sprintf(`
 resource "railway_tcp_proxy" "test" {
   application_port = "%d"
   environment_id = railway_environment.fixture.id

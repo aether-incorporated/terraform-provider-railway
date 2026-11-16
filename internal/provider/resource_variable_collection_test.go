@@ -84,7 +84,7 @@ func TestAccVariableCollectionResourceDefault(t *testing.T) {
 }
 
 func testAccVariableCollectionResourceConfigDefault(valueA, valueB, valueC string) string {
-	return testAccFixtureConfig() + fmt.Sprintf(`
+	return testAccFixtureServiceConfig() + fmt.Sprintf(`
 resource "railway_variable_collection" "test" {
   environment_id = railway_environment.fixture.id
   service_id = railway_service.fixture.id
@@ -108,7 +108,7 @@ resource "railway_variable_collection" "test" {
 }
 
 func testAccVariableCollectionResourceConfigNonDefault(valueB, valueC, valueD string) string {
-	return testAccFixtureConfig() + fmt.Sprintf(`
+	return testAccFixtureServiceConfig() + fmt.Sprintf(`
 resource "railway_variable_collection" "test" {
   environment_id = railway_environment.fixture.id
   service_id = railway_service.fixture.id
