@@ -18,9 +18,27 @@ var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 	"railway": providerserver.NewProtocol6WithError(New("test")()),
 }
 
+// Acceptance tests run against a dedicated Railway workspace holding one fixture project, so
+// they never touch real projects. The fixture project needs an environment named `staging`
+// and one service in it.
+var (
+	testAccWorkspaceId   = os.Getenv("RAILWAY_TEST_WORKSPACE_ID")
+	testAccProjectId     = os.Getenv("RAILWAY_TEST_PROJECT_ID")
+	testAccEnvironmentId = os.Getenv("RAILWAY_TEST_ENVIRONMENT_ID")
+	testAccServiceId     = os.Getenv("RAILWAY_TEST_SERVICE_ID")
+)
+
 func testAccPreCheck(t *testing.T) {
-	if v := os.Getenv("RAILWAY_TOKEN"); v == "" {
-		t.Fatal("RAILWAY_TOKEN must be set for acceptance tests")
+	for _, name := range []string{
+		"RAILWAY_TOKEN",
+		"RAILWAY_TEST_WORKSPACE_ID",
+		"RAILWAY_TEST_PROJECT_ID",
+		"RAILWAY_TEST_ENVIRONMENT_ID",
+		"RAILWAY_TEST_SERVICE_ID",
+	} {
+		if os.Getenv(name) == "" {
+			t.Fatalf("%s must be set for acceptance tests", name)
+		}
 	}
 }
 

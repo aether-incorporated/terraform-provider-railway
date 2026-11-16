@@ -37,6 +37,18 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 
 *Note:* Acceptance tests create real resources, and often cost money to run.
 
+Run them against a dedicated Railway workspace, never one holding real projects. Create one fixture project there with an environment named `staging` and one service in it, then set:
+
+| Variable                      | Value                                             |
+| ----------------------------- | ------------------------------------------------- |
+| `RAILWAY_TOKEN`               | A token for the test workspace                    |
+| `RAILWAY_TEST_WORKSPACE_ID`   | The test workspace's id                           |
+| `RAILWAY_TEST_PROJECT_ID`     | The fixture project's id                          |
+| `RAILWAY_TEST_ENVIRONMENT_ID` | The id of the fixture project's `staging` environment |
+| `RAILWAY_TEST_SERVICE_ID`     | The fixture service's id                          |
+
+In CI, `RAILWAY_TOKEN` is a repository secret and the four ids are repository variables. Without the secret, the acceptance tests are skipped and only the unit tests run.
+
 ```shell
 make testacc
 ```

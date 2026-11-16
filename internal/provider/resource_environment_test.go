@@ -21,14 +21,14 @@ func TestAccEnvironmentResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_environment.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_environment.test", "name", "integration"),
-					resource.TestCheckResourceAttr("railway_environment.test", "project_id", "0bb01547-570d-4109-a5e8-138691f6a2d1"),
+					resource.TestCheckResourceAttr("railway_environment.test", "project_id", testAccProjectId),
 				),
 			},
 			// ImportState testing
 			{
 				ResourceName:      "railway_environment.test",
 				ImportState:       true,
-				ImportStateId:     "0bb01547-570d-4109-a5e8-138691f6a2d1:integration",
+				ImportStateId:     testAccProjectId + ":integration",
 				ImportStateVerify: true,
 			},
 			// Update with default values
@@ -37,7 +37,7 @@ func TestAccEnvironmentResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_environment.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_environment.test", "name", "integration"),
-					resource.TestCheckResourceAttr("railway_environment.test", "project_id", "0bb01547-570d-4109-a5e8-138691f6a2d1"),
+					resource.TestCheckResourceAttr("railway_environment.test", "project_id", testAccProjectId),
 				),
 			},
 			// Delete testing automatically occurs in TestCase
@@ -79,7 +79,7 @@ func testAccEnvironmentResourceConfigDefault(name string) string {
 	return fmt.Sprintf(`
 resource "railway_environment" "test" {
   name = "%s"
-  project_id = "0bb01547-570d-4109-a5e8-138691f6a2d1"
+  project_id = "`+testAccProjectId+`"
 }
 `, name)
 }

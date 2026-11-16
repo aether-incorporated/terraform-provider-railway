@@ -19,8 +19,8 @@ func TestAccTcpProxyResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_tcp_proxy.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_tcp_proxy.test", "application_port", "6379"),
-					resource.TestCheckResourceAttr("railway_tcp_proxy.test", "environment_id", "d0519b29-5d12-4857-a5dd-76fa7418336c"),
-					resource.TestCheckResourceAttr("railway_tcp_proxy.test", "service_id", "39da7e07-fa3a-42fd-b695-d229319f2993"),
+					resource.TestCheckResourceAttr("railway_tcp_proxy.test", "environment_id", testAccEnvironmentId),
+					resource.TestCheckResourceAttr("railway_tcp_proxy.test", "service_id", testAccServiceId),
 					resource.TestCheckResourceAttrSet("railway_tcp_proxy.test", "proxy_port"),
 					resource.TestCheckResourceAttrSet("railway_tcp_proxy.test", "domain"),
 				),
@@ -38,8 +38,8 @@ func TestAccTcpProxyResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_tcp_proxy.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_tcp_proxy.test", "application_port", "6379"),
-					resource.TestCheckResourceAttr("railway_tcp_proxy.test", "environment_id", "d0519b29-5d12-4857-a5dd-76fa7418336c"),
-					resource.TestCheckResourceAttr("railway_tcp_proxy.test", "service_id", "39da7e07-fa3a-42fd-b695-d229319f2993"),
+					resource.TestCheckResourceAttr("railway_tcp_proxy.test", "environment_id", testAccEnvironmentId),
+					resource.TestCheckResourceAttr("railway_tcp_proxy.test", "service_id", testAccServiceId),
 					resource.TestCheckResourceAttrSet("railway_tcp_proxy.test", "proxy_port"),
 					resource.TestCheckResourceAttrSet("railway_tcp_proxy.test", "domain"),
 				),
@@ -53,8 +53,8 @@ func testAccTcpProxyResourceConfigDefault(port int) string {
 	return fmt.Sprintf(`
 resource "railway_tcp_proxy" "test" {
   application_port = "%d"
-  environment_id = "d0519b29-5d12-4857-a5dd-76fa7418336c"
-  service_id = "39da7e07-fa3a-42fd-b695-d229319f2993"
+  environment_id = "`+testAccEnvironmentId+`"
+  service_id = "`+testAccServiceId+`"
 }
 `, port)
 }

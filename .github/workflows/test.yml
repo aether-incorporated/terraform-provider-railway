@@ -53,6 +53,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      HAS_RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -68,9 +70,17 @@ jobs:
           terraform_wrapper: false
       - name: Install deps
         run: go mod download
+      - name: Note skipped acceptance tests
+        if: env.HAS_RAILWAY_TOKEN != 'true'
+        run: echo "::warning::RAILWAY_TOKEN is not set, so acceptance tests are skipped and only unit tests run."
       - name: Test
         env:
-          TF_ACC: 1
+          # Without a token, TF_ACC stays empty and the acceptance tests skip themselves.
+          TF_ACC: ${{ env.HAS_RAILWAY_TOKEN == 'true' && '1' || '' }}
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_TEST_WORKSPACE_ID: ${{ vars.RAILWAY_TEST_WORKSPACE_ID }}
+          RAILWAY_TEST_PROJECT_ID: ${{ vars.RAILWAY_TEST_PROJECT_ID }}
+          RAILWAY_TEST_ENVIRONMENT_ID: ${{ vars.RAILWAY_TEST_ENVIRONMENT_ID }}
+          RAILWAY_TEST_SERVICE_ID: ${{ vars.RAILWAY_TEST_SERVICE_ID }}
         run: go test -v -cover ./internal/provider/
         timeout-minutes: 10
