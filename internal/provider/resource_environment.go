@@ -132,7 +132,9 @@ func (r *EnvironmentResource) Create(ctx context.Context, req resource.CreateReq
 		SkipInitialDeploys:  data.SkipInitialDeploys.ValueBool(),
 	}
 
-	response, err := createEnvironment(ctx, *r.client, input)
+	response, err := retryWhileRateLimited(ctx, sleepWithContext, func() (*createEnvironmentResponse, error) {
+		return createEnvironment(ctx, *r.client, input)
+	})
 
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create environment, got error: %s", err))

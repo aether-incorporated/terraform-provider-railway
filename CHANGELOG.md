@@ -8,7 +8,7 @@
 
 ### Fixes
 
-- `railway_project` creation waits out Railway's limit of one new project per workspace every 30 seconds, retrying for up to 90 seconds, instead of failing when one apply creates several projects.
+- `railway_project` and `railway_environment` creation wait out Railway's limits of one new project, and one new environment, per workspace every 30 seconds, retrying for up to 90 seconds, instead of failing when one apply creates several.
 
 ## 0.1.0
 
