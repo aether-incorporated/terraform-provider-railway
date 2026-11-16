@@ -19,7 +19,7 @@ func TestAccServiceResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "cron_schedule"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_image"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -42,7 +42,7 @@ func TestAccServiceResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "cron_schedule"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_image"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -59,7 +59,7 @@ func TestAccServiceResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "nue-todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "cron_schedule"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_image"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -85,7 +85,7 @@ func TestAccServiceResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "nue-todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "cron_schedule"),
 					resource.TestCheckResourceAttr("railway_service.test", "source_image", "hello-world"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -133,7 +133,7 @@ func TestAccServiceResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "nue-todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckResourceAttr("railway_service.test", "cron_schedule", "0 0 * * *"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_image"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -170,7 +170,7 @@ func TestAccServiceResourceNonDefaultImage(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "cron_schedule"),
 					resource.TestCheckResourceAttr("railway_service.test", "source_image", "hello-world"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -194,7 +194,7 @@ func TestAccServiceResourceNonDefaultImage(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "cron_schedule"),
 					resource.TestCheckResourceAttr("railway_service.test", "source_image", "hello-world"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -212,7 +212,7 @@ func TestAccServiceResourceNonDefaultImage(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "nue-todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "cron_schedule"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_image"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -288,7 +288,7 @@ func TestAccServiceResourceNonDefaultRepo(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "nue-todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "cron_schedule"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_image"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -319,7 +319,7 @@ func TestAccServiceResourceNonDefaultRegionsImage(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "cron_schedule"),
 					resource.TestCheckResourceAttr("railway_service.test", "source_image", "hello-world"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -345,7 +345,7 @@ func TestAccServiceResourceNonDefaultRegionsImage(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "cron_schedule"),
 					resource.TestCheckResourceAttr("railway_service.test", "source_image", "hello-world"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -371,7 +371,7 @@ func TestAccServiceResourceNonDefaultRegionsImage(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "nue-todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "cron_schedule"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_image"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -405,7 +405,7 @@ func TestAccServiceResourceNonDefaultVolume(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckResourceAttr("railway_service.test", "cron_schedule", "0 0 * * *"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_image"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -431,7 +431,7 @@ func TestAccServiceResourceNonDefaultVolume(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckResourceAttr("railway_service.test", "cron_schedule", "0 0 * * *"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_image"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -457,7 +457,7 @@ func TestAccServiceResourceNonDefaultVolume(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckResourceAttr("railway_service.test", "cron_schedule", "0 0 * * *"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_image"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -483,7 +483,7 @@ func TestAccServiceResourceNonDefaultVolume(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service.test", "name", "nue-todo-app"),
-					resource.TestCheckResourceAttr("railway_service.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_service.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "cron_schedule"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_image"),
 					resource.TestCheckNoResourceAttr("railway_service.test", "source_repo"),
@@ -532,19 +532,19 @@ func TestAccServiceResourceCronScheduleMultipleRegions(t *testing.T) {
 }
 
 func testAccServiceResourceConfigDefault(name string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_service" "test" {
   name = "%s"
-  project_id = "`+testAccProjectId+`"
+  project_id = railway_project.fixture.id
 }
 `, name)
 }
 
 func testAccServiceResourceConfigNonDefaultRegions(name string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_service" "test" {
   name = "%s"
-  project_id = "`+testAccProjectId+`"
+  project_id = railway_project.fixture.id
 
   regions = [
     {
@@ -561,10 +561,10 @@ resource "railway_service" "test" {
 }
 
 func testAccServiceResourceConfigNonDefaultRegionsImage(name string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_service" "test" {
   name = "%s"
-  project_id = "`+testAccProjectId+`"
+  project_id = railway_project.fixture.id
 
   source_image = "hello-world"
 
@@ -583,10 +583,10 @@ resource "railway_service" "test" {
 }
 
 func testAccServiceResourceConfigNonDefaultImage(name string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_service" "test" {
   name = "%s"
-  project_id = "`+testAccProjectId+`"
+  project_id = railway_project.fixture.id
 
   source_image = "hello-world"
 }
@@ -594,10 +594,10 @@ resource "railway_service" "test" {
 }
 
 func testAccServiceResourceConfigNonDefaultRepo(name string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_service" "test" {
   name = "%s"
-  project_id = "`+testAccProjectId+`"
+  project_id = railway_project.fixture.id
 
   source_repo = "railwayapp/blog"
   source_repo_branch = "main"
@@ -608,10 +608,10 @@ resource "railway_service" "test" {
 }
 
 func testAccServiceResourceConfigNonDefaultVolume(name string, volumeName string, path string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_service" "test" {
   name = "%s"
-  project_id = "`+testAccProjectId+`"
+  project_id = railway_project.fixture.id
 
   cron_schedule = "0 0 * * *"
 
@@ -624,10 +624,10 @@ resource "railway_service" "test" {
 }
 
 func testAccServiceResourceConfigCronScheduleMultipleReplicas(name string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_service" "test" {
   name       = "%s"
-  project_id = "`+testAccProjectId+`"
+  project_id = railway_project.fixture.id
 
   cron_schedule = "0 0 * * *"
 
@@ -642,10 +642,10 @@ resource "railway_service" "test" {
 }
 
 func testAccServiceResourceConfigCronScheduleMultipleRegions(name string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_service" "test" {
   name       = "%s"
-  project_id = "`+testAccProjectId+`"
+  project_id = railway_project.fixture.id
 
   cron_schedule = "0 0 * * *"
 

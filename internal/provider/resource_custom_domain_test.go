@@ -4,24 +4,28 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccCustomDomainResourceDefault(t *testing.T) {
+	// Custom domains are unique across Railway, so each run attaches a fresh one.
+	domain := "tf-acc-" + acctest.RandStringFromCharSet(8, acctest.CharSetAlphaNum) + ".example.com"
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccCustomDomainResourceConfigDefault("terraform.example.com"),
+				Config: testAccCustomDomainResourceConfigDefault(domain),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_custom_domain.test", "id", uuidRegex()),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "domain", "terraform.example.com"),
+					resource.TestCheckResourceAttr("railway_custom_domain.test", "domain", domain),
 					resource.TestCheckNoResourceAttr("railway_custom_domain.test", "target_port"),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "environment_id", testAccEnvironmentId),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "service_id", testAccServiceId),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "service_id", "railway_service.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", "terraform"),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "zone", "example.com"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "dns_record_value"),
@@ -33,19 +37,19 @@ func TestAccCustomDomainResourceDefault(t *testing.T) {
 			{
 				ResourceName:      "railway_custom_domain.test",
 				ImportState:       true,
-				ImportStateId:     testAccServiceId + ":staging:terraform.example.com",
+				ImportStateIdFunc: testAccFixtureImportStateId("{service}:staging:" + domain),
 				ImportStateVerify: true,
 			},
 			// Update with default values
 			{
-				Config: testAccCustomDomainResourceConfigDefault("terraform.example.com"),
+				Config: testAccCustomDomainResourceConfigDefault(domain),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_custom_domain.test", "id", uuidRegex()),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "domain", "terraform.example.com"),
+					resource.TestCheckResourceAttr("railway_custom_domain.test", "domain", domain),
 					resource.TestCheckNoResourceAttr("railway_custom_domain.test", "target_port"),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "environment_id", testAccEnvironmentId),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "service_id", testAccServiceId),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "service_id", "railway_service.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", "terraform"),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "zone", "example.com"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "dns_record_value"),
@@ -55,14 +59,14 @@ func TestAccCustomDomainResourceDefault(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: testAccCustomDomainResourceConfigNonDefault("terraform.example.com"),
+				Config: testAccCustomDomainResourceConfigNonDefault(domain),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_custom_domain.test", "id", uuidRegex()),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "domain", "terraform.example.com"),
+					resource.TestCheckResourceAttr("railway_custom_domain.test", "domain", domain),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "target_port", "3000"),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "environment_id", testAccEnvironmentId),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "service_id", testAccServiceId),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "service_id", "railway_service.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", "terraform"),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "zone", "example.com"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "dns_record_value"),
@@ -74,7 +78,7 @@ func TestAccCustomDomainResourceDefault(t *testing.T) {
 			{
 				ResourceName:      "railway_custom_domain.test",
 				ImportState:       true,
-				ImportStateId:     testAccServiceId + ":staging:terraform.example.com",
+				ImportStateIdFunc: testAccFixtureImportStateId("{service}:staging:" + domain),
 				ImportStateVerify: true,
 			},
 			// Delete testing automatically occurs in TestCase
@@ -83,20 +87,23 @@ func TestAccCustomDomainResourceDefault(t *testing.T) {
 }
 
 func TestAccCustomDomainResourceNonDefault(t *testing.T) {
+	// Custom domains are unique across Railway, so each run attaches a fresh one.
+	domain := "tf-acc-" + acctest.RandStringFromCharSet(8, acctest.CharSetAlphaNum) + ".example.com"
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccCustomDomainResourceConfigNonDefault("terraform.example.com"),
+				Config: testAccCustomDomainResourceConfigNonDefault(domain),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_custom_domain.test", "id", uuidRegex()),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "domain", "terraform.example.com"),
+					resource.TestCheckResourceAttr("railway_custom_domain.test", "domain", domain),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "target_port", "3000"),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "environment_id", testAccEnvironmentId),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "service_id", testAccServiceId),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "service_id", "railway_service.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", "terraform"),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "zone", "example.com"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "dns_record_value"),
@@ -108,19 +115,19 @@ func TestAccCustomDomainResourceNonDefault(t *testing.T) {
 			{
 				ResourceName:      "railway_custom_domain.test",
 				ImportState:       true,
-				ImportStateId:     testAccServiceId + ":staging:terraform.example.com",
+				ImportStateIdFunc: testAccFixtureImportStateId("{service}:staging:" + domain),
 				ImportStateVerify: true,
 			},
 			// Update with same values
 			{
-				Config: testAccCustomDomainResourceConfigNonDefault("terraform.example.com"),
+				Config: testAccCustomDomainResourceConfigNonDefault(domain),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_custom_domain.test", "id", uuidRegex()),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "domain", "terraform.example.com"),
+					resource.TestCheckResourceAttr("railway_custom_domain.test", "domain", domain),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "target_port", "3000"),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "environment_id", testAccEnvironmentId),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "service_id", testAccServiceId),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "service_id", "railway_service.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", "terraform"),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "zone", "example.com"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "dns_record_value"),
@@ -130,14 +137,14 @@ func TestAccCustomDomainResourceNonDefault(t *testing.T) {
 			},
 			// Update with default values
 			{
-				Config: testAccCustomDomainResourceConfigDefault("terraform.example.com"),
+				Config: testAccCustomDomainResourceConfigDefault(domain),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_custom_domain.test", "id", uuidRegex()),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "domain", "terraform.example.com"),
+					resource.TestCheckResourceAttr("railway_custom_domain.test", "domain", domain),
 					resource.TestCheckNoResourceAttr("railway_custom_domain.test", "target_port"),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "environment_id", testAccEnvironmentId),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "service_id", testAccServiceId),
-					resource.TestCheckResourceAttr("railway_custom_domain.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "service_id", "railway_service.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_custom_domain.test", "project_id", "railway_project.fixture", "id"),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "host_label", "terraform"),
 					resource.TestCheckResourceAttr("railway_custom_domain.test", "zone", "example.com"),
 					resource.TestCheckResourceAttrSet("railway_custom_domain.test", "dns_record_value"),
@@ -149,7 +156,7 @@ func TestAccCustomDomainResourceNonDefault(t *testing.T) {
 			{
 				ResourceName:      "railway_custom_domain.test",
 				ImportState:       true,
-				ImportStateId:     testAccServiceId + ":staging:terraform.example.com",
+				ImportStateIdFunc: testAccFixtureImportStateId("{service}:staging:" + domain),
 				ImportStateVerify: true,
 			},
 			// Delete testing automatically occurs in TestCase
@@ -158,21 +165,21 @@ func TestAccCustomDomainResourceNonDefault(t *testing.T) {
 }
 
 func testAccCustomDomainResourceConfigDefault(name string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_custom_domain" "test" {
   domain = "%s"
-  environment_id = "`+testAccEnvironmentId+`"
-  service_id = "`+testAccServiceId+`"
+  environment_id = railway_project.fixture.default_environment.id
+  service_id = railway_service.fixture.id
 }
 `, name)
 }
 
 func testAccCustomDomainResourceConfigNonDefault(name string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_custom_domain" "test" {
   domain = "%s"
-  environment_id = "`+testAccEnvironmentId+`"
-  service_id = "`+testAccServiceId+`"
+  environment_id = railway_project.fixture.default_environment.id
+  service_id = railway_service.fixture.id
 
   target_port = 3000
 }

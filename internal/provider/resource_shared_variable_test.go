@@ -16,47 +16,47 @@ func TestAccSharedVariableResourceDefault(t *testing.T) {
 			{
 				Config: testAccSharedVariableResourceConfigDefault("1234567890"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("railway_shared_variable.test", "id", testAccProjectId+":"+testAccEnvironmentId+":API_KEY"),
+					testAccCheckFixtureAttr("railway_shared_variable.test", "id", "{project}:{environment}:API_KEY"),
 					resource.TestCheckResourceAttr("railway_shared_variable.test", "name", "API_KEY"),
 					resource.TestCheckResourceAttr("railway_shared_variable.test", "value", "1234567890"),
-					resource.TestCheckResourceAttr("railway_shared_variable.test", "environment_id", testAccEnvironmentId),
-					resource.TestCheckResourceAttr("railway_shared_variable.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "project_id", "railway_project.fixture", "id"),
 				),
 			},
 			// ImportState testing
 			{
 				ResourceName:      "railway_shared_variable.test",
 				ImportState:       true,
-				ImportStateId:     testAccProjectId + ":staging:API_KEY",
+				ImportStateIdFunc: testAccFixtureImportStateId("{project}:staging:API_KEY"),
 				ImportStateVerify: true,
 			},
 			// Update with default values
 			{
 				Config: testAccSharedVariableResourceConfigDefault("1234567890"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("railway_shared_variable.test", "id", testAccProjectId+":"+testAccEnvironmentId+":API_KEY"),
+					testAccCheckFixtureAttr("railway_shared_variable.test", "id", "{project}:{environment}:API_KEY"),
 					resource.TestCheckResourceAttr("railway_shared_variable.test", "name", "API_KEY"),
 					resource.TestCheckResourceAttr("railway_shared_variable.test", "value", "1234567890"),
-					resource.TestCheckResourceAttr("railway_shared_variable.test", "environment_id", testAccEnvironmentId),
-					resource.TestCheckResourceAttr("railway_shared_variable.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "project_id", "railway_project.fixture", "id"),
 				),
 			},
 			// Update and Read testing
 			{
 				Config: testAccSharedVariableResourceConfigDefault("nice"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("railway_shared_variable.test", "id", testAccProjectId+":"+testAccEnvironmentId+":API_KEY"),
+					testAccCheckFixtureAttr("railway_shared_variable.test", "id", "{project}:{environment}:API_KEY"),
 					resource.TestCheckResourceAttr("railway_shared_variable.test", "name", "API_KEY"),
 					resource.TestCheckResourceAttr("railway_shared_variable.test", "value", "nice"),
-					resource.TestCheckResourceAttr("railway_shared_variable.test", "environment_id", testAccEnvironmentId),
-					resource.TestCheckResourceAttr("railway_shared_variable.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "project_id", "railway_project.fixture", "id"),
 				),
 			},
 			// ImportState testing
 			{
 				ResourceName:      "railway_shared_variable.test",
 				ImportState:       true,
-				ImportStateId:     testAccProjectId + ":staging:API_KEY",
+				ImportStateIdFunc: testAccFixtureImportStateId("{project}:staging:API_KEY"),
 				ImportStateVerify: true,
 			},
 			// Delete testing automatically occurs in TestCase
@@ -65,12 +65,12 @@ func TestAccSharedVariableResourceDefault(t *testing.T) {
 }
 
 func testAccSharedVariableResourceConfigDefault(value string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_shared_variable" "test" {
   name = "API_KEY"
   value = "%s"
-  environment_id = "`+testAccEnvironmentId+`"
-  project_id = "`+testAccProjectId+`"
+  environment_id = railway_project.fixture.default_environment.id
+  project_id = railway_project.fixture.id
 }
 `, value)
 }

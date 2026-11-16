@@ -210,6 +210,7 @@ func TestAccServiceInstanceResourceDisableClearsRetainedSettings(t *testing.T) {
 func testAccServiceInstanceProjectResourcesConfig(projectName string) string {
 	return fmt.Sprintf(`
 resource "railway_project" "test_instance" {
+  workspace_id = "`+testAccWorkspaceId+`"
   name = "%s"
 }
 

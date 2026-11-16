@@ -21,14 +21,14 @@ func TestAccEnvironmentResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_environment.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_environment.test", "name", "integration"),
-					resource.TestCheckResourceAttr("railway_environment.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_environment.test", "project_id", "railway_project.fixture", "id"),
 				),
 			},
 			// ImportState testing
 			{
 				ResourceName:      "railway_environment.test",
 				ImportState:       true,
-				ImportStateId:     testAccProjectId + ":integration",
+				ImportStateIdFunc: testAccFixtureImportStateId("{project}:integration"),
 				ImportStateVerify: true,
 			},
 			// Update with default values
@@ -37,7 +37,7 @@ func TestAccEnvironmentResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_environment.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_environment.test", "name", "integration"),
-					resource.TestCheckResourceAttr("railway_environment.test", "project_id", testAccProjectId),
+					resource.TestCheckResourceAttrPair("railway_environment.test", "project_id", "railway_project.fixture", "id"),
 				),
 			},
 			// Delete testing automatically occurs in TestCase
@@ -76,10 +76,10 @@ func TestAccEnvironmentResourceClone(t *testing.T) {
 }
 
 func testAccEnvironmentResourceConfigDefault(name string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_environment" "test" {
   name = "%s"
-  project_id = "`+testAccProjectId+`"
+  project_id = railway_project.fixture.id
 }
 `, name)
 }
@@ -87,6 +87,7 @@ resource "railway_environment" "test" {
 func testAccEnvironmentResourceConfigClone(projectName string, name string) string {
 	return fmt.Sprintf(`
 resource "railway_project" "test_clone" {
+  workspace_id = "`+testAccWorkspaceId+`"
   name = "%s"
 }
 
