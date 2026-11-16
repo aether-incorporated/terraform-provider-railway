@@ -140,6 +140,7 @@ func TestAccVolumeOwnershipLifecycle(t *testing.T) {
 func testAccVolumeProjectConfig(projectName string) string {
 	return fmt.Sprintf(`
 resource "railway_project" "test" {
+  workspace_id = "`+testAccWorkspaceId+`"
   name = %q
 }
 
@@ -196,6 +197,7 @@ resource "railway_volume_instance" "test" {
 
 	return fmt.Sprintf(`
 resource "railway_project" "test" {
+  workspace_id = "`+testAccWorkspaceId+`"
   name = %q
 }
 

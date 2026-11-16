@@ -11,33 +11,36 @@ import (
 )
 
 func TestAccEnvironmentResourceDefault(t *testing.T) {
+	// The environment lives in the shared project, so each run uses a fresh name.
+	name := "tf-acc-int-" + acctest.RandStringFromCharSet(8, acctest.CharSetAlpha)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccEnvironmentResourceConfigDefault("integration"),
+				Config: testAccEnvironmentResourceConfigDefault(name),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_environment.test", "id", uuidRegex()),
-					resource.TestCheckResourceAttr("railway_environment.test", "name", "integration"),
-					resource.TestCheckResourceAttr("railway_environment.test", "project_id", "0bb01547-570d-4109-a5e8-138691f6a2d1"),
+					resource.TestCheckResourceAttr("railway_environment.test", "name", name),
+					resource.TestCheckResourceAttrPair("railway_environment.test", "project_id", "railway_environment.fixture", "project_id"),
 				),
 			},
 			// ImportState testing
 			{
 				ResourceName:      "railway_environment.test",
 				ImportState:       true,
-				ImportStateId:     "0bb01547-570d-4109-a5e8-138691f6a2d1:integration",
+				ImportStateIdFunc: testAccFixtureImportStateId("{project}:" + name),
 				ImportStateVerify: true,
 			},
 			// Update with default values
 			{
-				Config: testAccEnvironmentResourceConfigDefault("integration"),
+				Config: testAccEnvironmentResourceConfigDefault(name),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_environment.test", "id", uuidRegex()),
-					resource.TestCheckResourceAttr("railway_environment.test", "name", "integration"),
-					resource.TestCheckResourceAttr("railway_environment.test", "project_id", "0bb01547-570d-4109-a5e8-138691f6a2d1"),
+					resource.TestCheckResourceAttr("railway_environment.test", "name", name),
+					resource.TestCheckResourceAttrPair("railway_environment.test", "project_id", "railway_environment.fixture", "project_id"),
 				),
 			},
 			// Delete testing automatically occurs in TestCase
@@ -76,10 +79,10 @@ func TestAccEnvironmentResourceClone(t *testing.T) {
 }
 
 func testAccEnvironmentResourceConfigDefault(name string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_environment" "test" {
   name = "%s"
-  project_id = "0bb01547-570d-4109-a5e8-138691f6a2d1"
+  project_id = railway_environment.fixture.project_id
 }
 `, name)
 }
@@ -87,13 +90,19 @@ resource "railway_environment" "test" {
 func testAccEnvironmentResourceConfigClone(projectName string, name string) string {
 	return fmt.Sprintf(`
 resource "railway_project" "test_clone" {
+  workspace_id = "`+testAccWorkspaceId+`"
   name = "%s"
 }
 
 resource "railway_service" "clone_source" {
-  name         = "clone-source"
-  project_id   = railway_project.test_clone.id
-  source_image = "traefik/whoami:v1.10"
+  name       = "clone-source"
+  project_id = railway_project.test_clone.id
+}
+
+resource "railway_service_instance" "clone_source" {
+  environment_id = railway_project.test_clone.default_environment.id
+  service_id     = railway_service.clone_source.id
+  source_image   = "traefik/whoami:v1.10"
 }
 
 resource "railway_environment" "test" {
@@ -102,7 +111,7 @@ resource "railway_environment" "test" {
   source_environment_id = railway_project.test_clone.default_environment.id
   skip_initial_deploys  = true
 
-  depends_on = [railway_service.clone_source]
+  depends_on = [railway_service_instance.clone_source]
 }
 `, projectName, name)
 }

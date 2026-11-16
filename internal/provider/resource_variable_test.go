@@ -120,6 +120,7 @@ resource "railway_variable" "transition" {
 
 	return fmt.Sprintf(`
 resource "railway_project" "test_variable" {
+  workspace_id = "`+testAccWorkspaceId+`"
   name = "%s"
 }
 

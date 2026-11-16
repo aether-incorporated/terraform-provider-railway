@@ -193,7 +193,9 @@ func (r *ProjectResource) Create(ctx context.Context, req resource.CreateRequest
 
 	input.DefaultEnvironmentName = defaultEnvironmentData.Name.ValueString()
 
-	response, err := createProject(ctx, *r.client, input)
+	response, err := retryWhileRateLimited(ctx, sleepWithContext, func() (*createProjectResponse, error) {
+		return createProject(ctx, *r.client, input)
+	})
 
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create project, got error: %s", err))

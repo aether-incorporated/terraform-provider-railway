@@ -15,6 +15,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/float64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -57,6 +58,8 @@ type ServiceInstanceResourceModel struct {
 	HealthcheckTimeout                 types.Int64   `tfsdk:"healthcheck_timeout"`
 	VCpus                              types.Float64 `tfsdk:"vcpus"`
 	MemoryGb                           types.Float64 `tfsdk:"memory_gb"`
+	StaticEgressEnabled                types.Bool    `tfsdk:"static_egress_enabled"`
+	StaticEgressIps                    types.List    `tfsdk:"static_egress_ips"`
 }
 
 type ServiceInstanceRegionModel struct {
@@ -243,6 +246,20 @@ func (r *ServiceInstanceResource) Schema(ctx context.Context, req resource.Schem
 					),
 				},
 			},
+			"static_egress_enabled": schema.BoolAttribute{
+				MarkdownDescription: "Route this service instance's outbound traffic through static IPv4 addresses, for allowlisting it in external firewalls. Omit or set to `false` to release the addresses. Requires a Railway plan that includes static outbound IPs. Railway picks the gateway region, so multi-region service instances are not supported yet.",
+				Optional:            true,
+				Computed:            true,
+				Default:             booldefault.StaticBool(false),
+			},
+			"static_egress_ips": schema.ListAttribute{
+				MarkdownDescription: "Static outbound IPv4 addresses assigned to this service instance, sorted. Empty when `static_egress_enabled` is `false`. Addresses stay the same while static egress remains enabled.",
+				Computed:            true,
+				ElementType:         types.StringType,
+				PlanModifiers: []planmodifier.List{
+					staticEgressIpsPlanModifier{},
+				},
+			},
 		},
 	}
 }
@@ -415,6 +432,7 @@ func (r *ServiceInstanceResource) Create(ctx context.Context, req resource.Creat
 	}
 
 	data.Id = types.StringValue(serviceInstanceResourceId(data))
+	data.StaticEgressIps = buildStaticEgressIpsValue(nil)
 	data.EffectiveRegions = data.Regions
 	if data.EffectiveRegions.IsNull() || data.EffectiveRegions.IsUnknown() {
 		data.EffectiveRegions = types.MapValueMust(
@@ -494,6 +512,19 @@ func (r *ServiceInstanceResource) Delete(ctx context.Context, req resource.Delet
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
 	if resp.Diagnostics.HasError() {
 		return
+	}
+
+	if data.StaticEgressEnabled.ValueBool() {
+		if err := applyStaticEgress(
+			ctx,
+			*r.client,
+			data.EnvironmentId.ValueString(),
+			data.ServiceId.ValueString(),
+			false,
+		); err != nil {
+			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to release static egress addresses, got error: %s", err))
+			return
+		}
 	}
 
 	if err := commitAndWaitForEnvironmentPatch(
@@ -577,7 +608,13 @@ func (r *ServiceInstanceResource) apply(ctx context.Context, data ServiceInstanc
 		return err
 	}
 
-	return nil
+	return applyStaticEgress(
+		ctx,
+		*r.client,
+		data.EnvironmentId.ValueString(),
+		data.ServiceId.ValueString(),
+		data.StaticEgressEnabled.ValueBool(),
+	)
 }
 
 func (r *ServiceInstanceResource) create(ctx context.Context, data ServiceInstanceResourceModel) error {
@@ -621,6 +658,18 @@ func (r *ServiceInstanceResource) read(ctx context.Context, data *ServiceInstanc
 	if err != nil {
 		return err
 	}
+
+	staticEgressIps, err := getStaticEgressIps(
+		ctx,
+		*r.client,
+		data.EnvironmentId.ValueString(),
+		data.ServiceId.ValueString(),
+	)
+	if err != nil {
+		return err
+	}
+	data.StaticEgressEnabled = types.BoolValue(len(staticEgressIps) > 0)
+	data.StaticEgressIps = buildStaticEgressIpsValue(staticEgressIps)
 
 	if _, attached := response.Environment.Config.Services[data.ServiceId.ValueString()]; !attached {
 		data.SourceImage = types.StringValue("")
@@ -830,9 +879,14 @@ func expandServiceInstanceEnvironmentPatch(
 		}
 	}
 
+	// Railway drops a service from the environment config once all its settings are cleared, and
+	// a patch only re-attaches it when it is marked as created.
+	_, isAttached := current.Services[data.ServiceId.ValueString()]
+
 	return railway.EnvironmentConfig{
 		Services: map[string]railway.ServiceConfig{
 			data.ServiceId.ValueString(): {
+				IsCreated:  !isAttached,
 				ConfigFile: stringPointer(data.ConfigPath.ValueString()),
 				Source: &railway.ServiceSourceConfig{
 					Image:         stringPointer(data.SourceImage.ValueString()),

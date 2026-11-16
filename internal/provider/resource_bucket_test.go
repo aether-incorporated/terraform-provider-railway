@@ -132,6 +132,7 @@ resource "railway_bucket_instance" "other" {
 
 	return fmt.Sprintf(`
 resource "railway_project" "test" {
+  workspace_id = "`+testAccWorkspaceId+`"
   name = "%s"
 
   default_environment = {

@@ -11,20 +11,24 @@ import (
 )
 
 func TestAccServiceDomainResourceDefault(t *testing.T) {
+	// Railway subdomains are global, so each run claims fresh ones.
+	subdomain := "tf-acc-" + acctest.RandString(8)
+	secondSubdomain := subdomain + "-2"
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccServiceDomainResourceConfigDefault("terraform-tester"),
+				Config: testAccServiceDomainResourceConfigDefault(subdomain),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service_domain.test", "id", uuidRegex()),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "subdomain", "terraform-tester"),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "environment_id", "d0519b29-5d12-4857-a5dd-76fa7418336c"),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "service_id", "39da7e07-fa3a-42fd-b695-d229319f2993"),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "project_id", "0bb01547-570d-4109-a5e8-138691f6a2d1"),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "domain", "terraform-tester.up.railway.app"),
+					resource.TestCheckResourceAttr("railway_service_domain.test", "subdomain", subdomain),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "environment_id", "railway_environment.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "service_id", "railway_service.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "project_id", "railway_environment.fixture", "project_id"),
+					resource.TestCheckResourceAttr("railway_service_domain.test", "domain", subdomain+".up.railway.app"),
 					resource.TestCheckResourceAttr("railway_service_domain.test", "suffix", "up.railway.app"),
 				),
 			},
@@ -32,32 +36,32 @@ func TestAccServiceDomainResourceDefault(t *testing.T) {
 			{
 				ResourceName:      "railway_service_domain.test",
 				ImportState:       true,
-				ImportStateId:     "39da7e07-fa3a-42fd-b695-d229319f2993:staging:terraform-tester.up.railway.app",
+				ImportStateIdFunc: testAccFixtureImportStateId("{service}:{environment_name}:" + subdomain + ".up.railway.app"),
 				ImportStateVerify: true,
 			},
 			// Update with default values
 			{
-				Config: testAccServiceDomainResourceConfigDefault("terraform-tester"),
+				Config: testAccServiceDomainResourceConfigDefault(subdomain),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service_domain.test", "id", uuidRegex()),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "subdomain", "terraform-tester"),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "environment_id", "d0519b29-5d12-4857-a5dd-76fa7418336c"),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "service_id", "39da7e07-fa3a-42fd-b695-d229319f2993"),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "project_id", "0bb01547-570d-4109-a5e8-138691f6a2d1"),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "domain", "terraform-tester.up.railway.app"),
+					resource.TestCheckResourceAttr("railway_service_domain.test", "subdomain", subdomain),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "environment_id", "railway_environment.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "service_id", "railway_service.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "project_id", "railway_environment.fixture", "project_id"),
+					resource.TestCheckResourceAttr("railway_service_domain.test", "domain", subdomain+".up.railway.app"),
 					resource.TestCheckResourceAttr("railway_service_domain.test", "suffix", "up.railway.app"),
 				),
 			},
 			// Update with default values
 			{
-				Config: testAccServiceDomainResourceConfigDefault("terraform-tester-2"),
+				Config: testAccServiceDomainResourceConfigDefault(secondSubdomain),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service_domain.test", "id", uuidRegex()),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "subdomain", "terraform-tester-2"),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "environment_id", "d0519b29-5d12-4857-a5dd-76fa7418336c"),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "service_id", "39da7e07-fa3a-42fd-b695-d229319f2993"),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "project_id", "0bb01547-570d-4109-a5e8-138691f6a2d1"),
-					resource.TestCheckResourceAttr("railway_service_domain.test", "domain", "terraform-tester-2.up.railway.app"),
+					resource.TestCheckResourceAttr("railway_service_domain.test", "subdomain", secondSubdomain),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "environment_id", "railway_environment.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "service_id", "railway_service.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "project_id", "railway_environment.fixture", "project_id"),
+					resource.TestCheckResourceAttr("railway_service_domain.test", "domain", secondSubdomain+".up.railway.app"),
 					resource.TestCheckResourceAttr("railway_service_domain.test", "suffix", "up.railway.app"),
 				),
 			},
@@ -65,7 +69,7 @@ func TestAccServiceDomainResourceDefault(t *testing.T) {
 			{
 				ResourceName:      "railway_service_domain.test",
 				ImportState:       true,
-				ImportStateId:     "39da7e07-fa3a-42fd-b695-d229319f2993:staging:terraform-tester-2.up.railway.app",
+				ImportStateIdFunc: testAccFixtureImportStateId("{service}:{environment_name}:" + secondSubdomain + ".up.railway.app"),
 				ImportStateVerify: true,
 			},
 			// Delete testing automatically occurs in TestCase
@@ -111,11 +115,11 @@ func testAccDeleteServiceDomain(state *terraform.State) error {
 }
 
 func testAccServiceDomainResourceConfigDefault(name string) string {
-	return fmt.Sprintf(`
+	return testAccFixtureServiceConfig() + fmt.Sprintf(`
 resource "railway_service_domain" "test" {
   subdomain = "%s"
-  environment_id = "d0519b29-5d12-4857-a5dd-76fa7418336c"
-  service_id = "39da7e07-fa3a-42fd-b695-d229319f2993"
+  environment_id = railway_environment.fixture.id
+  service_id = railway_service.fixture.id
 }
 `, name)
 }
@@ -123,6 +127,7 @@ resource "railway_service_domain" "test" {
 func testAccServiceDomainResourceExternalDeletionConfig(projectName string, subdomain string) string {
 	return fmt.Sprintf(`
 resource "railway_project" "test" {
+  workspace_id = "`+testAccWorkspaceId+`"
   name = "%s"
 }
 

@@ -46,6 +46,7 @@ resource "railway_service_instance" "api" {
 - `source_repo` (String) Source repository used by this service instance.
 - `source_repo_branch` (String) Repository branch deployed by this service instance.
 - `start_command` (String) Command used to start this service instance. Omit to reset the command override.
+- `static_egress_enabled` (Boolean) Route this service instance's outbound traffic through static IPv4 addresses, for allowlisting it in external firewalls. Omit or set to `false` to release the addresses. Requires a Railway plan that includes static outbound IPs. Railway picks the gateway region, so multi-region service instances are not supported yet.
 - `vcpus` (Number) Number of vCPUs allocated to this service instance. Omit or set to zero to reset the CPU override.
 
 ### Read-Only
@@ -53,6 +54,7 @@ resource "railway_service_instance" "api" {
 - `effective_regions` (Attributes Map) Regions and replica counts currently present in Railway's environment configuration. (see [below for nested schema](#nestedatt--effective_regions))
 - `id` (String) Identifier of the service instance.
 - `project_id` (String) Identifier of the project containing the service and environment.
+- `static_egress_ips` (List of String) Static outbound IPv4 addresses assigned to this service instance, sorted. Empty when `static_egress_enabled` is `false`. Addresses stay the same while static egress remains enabled.
 
 <a id="nestedatt--regions"></a>
 ### Nested Schema for `regions`

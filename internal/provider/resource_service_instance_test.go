@@ -50,6 +50,38 @@ func TestExpandServiceInstanceEnvironmentPatchPreservesRegistryAndRemovesRegions
 	}
 }
 
+// Railway drops a service from the environment config once all its settings are cleared, and
+// a patch only re-attaches it when it is marked as created.
+func TestExpandServiceInstanceEnvironmentPatchReattachesDetachedService(t *testing.T) {
+	data := ServiceInstanceResourceModel{
+		ServiceId:     types.StringValue("service-id"),
+		RootDirectory: types.StringValue("/services/api"),
+	}
+
+	got := expandServiceInstanceEnvironmentPatch(data, nil, railway.EnvironmentConfig{
+		Services: map[string]railway.ServiceConfig{"other-service": {}},
+	})
+
+	if !got.Services["service-id"].IsCreated {
+		t.Fatal("expected a service missing from the environment config to be marked as created")
+	}
+}
+
+func TestExpandServiceInstanceEnvironmentPatchLeavesAttachedServiceAlone(t *testing.T) {
+	data := ServiceInstanceResourceModel{
+		ServiceId:     types.StringValue("service-id"),
+		RootDirectory: types.StringValue("/services/api"),
+	}
+
+	got := expandServiceInstanceEnvironmentPatch(data, nil, railway.EnvironmentConfig{
+		Services: map[string]railway.ServiceConfig{"service-id": {}},
+	})
+
+	if got.Services["service-id"].IsCreated {
+		t.Fatal("expected an attached service not to be marked as created")
+	}
+}
+
 func TestAccServiceInstanceResourceDefault(t *testing.T) {
 	projectName := "tf-acc-service-instance-" + acctest.RandStringFromCharSet(8, acctest.CharSetAlphaNum)
 
@@ -74,6 +106,8 @@ func TestAccServiceInstanceResourceDefault(t *testing.T) {
 					resource.TestCheckResourceAttr("railway_service_instance.test", "memory_gb", "0.5"),
 					resource.TestCheckResourceAttr("railway_service_instance.test", "regions.europe-west4-drams3a.num_replicas", "1"),
 					resource.TestCheckResourceAttr("railway_service_instance.test", "effective_regions.europe-west4-drams3a.num_replicas", "1"),
+					resource.TestCheckResourceAttr("railway_service_instance.test", "static_egress_enabled", "false"),
+					resource.TestCheckResourceAttr("railway_service_instance.test", "static_egress_ips.#", "0"),
 					testAccCheckSiblingServiceInstance,
 				),
 			},
@@ -208,6 +242,7 @@ func TestAccServiceInstanceResourceDisableClearsRetainedSettings(t *testing.T) {
 func testAccServiceInstanceProjectResourcesConfig(projectName string) string {
 	return fmt.Sprintf(`
 resource "railway_project" "test_instance" {
+  workspace_id = "`+testAccWorkspaceId+`"
   name = "%s"
 }
 

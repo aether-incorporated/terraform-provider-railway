@@ -18,6 +18,7 @@ func TestAccBucketCredentialsEphemeralResourceDefault(t *testing.T) {
 			{
 				Config: fmt.Sprintf(`
 resource "railway_project" "credentials_test" {
+  workspace_id = "`+testAccWorkspaceId+`"
   name = "%s"
 }
 
