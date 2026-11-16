@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Breaking changes
+
+- `railway_service` is now only the project-level identity: `name` and `project_id`. The deprecated deploy attributes are removed: `source_image`, `source_image_registry_username`, `source_image_registry_password`, `source_repo`, `source_repo_branch`, `root_directory`, `config_path`, `cron_schedule`, `regions` and `volume`. They configured whichever environment Railway listed first, which is wrong for any project with more than one. Move them to `railway_service_instance`, and volumes to `railway_volume` and `railway_volume_instance`, before upgrading.
+
 ### Features
 
 - `railway_service_instance` gains `static_egress_enabled` and the computed `static_egress_ips`, so a service's static outbound addresses can be switched on and fed straight into a firewall allowlist such as an AWS security group. The default is `false`, so applying a configuration that omits it releases static egress that was enabled in the dashboard.

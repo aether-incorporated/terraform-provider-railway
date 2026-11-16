@@ -3,12 +3,12 @@
 page_title: "railway_service Resource - terraform-provider-railway"
 subcategory: ""
 description: |-
-  Project-level Railway service identity. Environment-specific deployment settings are deprecated on this resource and should be managed with railway_service_instance.
+  Project-level Railway service identity. Deployment settings are scoped to an environment and managed with railway_service_instance; volumes with railway_volume and railway_volume_instance.
 ---
 
 # railway_service (Resource)
 
-Project-level Railway service identity. Environment-specific deployment settings are deprecated on this resource and should be managed with `railway_service_instance`.
+Project-level Railway service identity. Deployment settings are scoped to an environment and managed with `railway_service_instance`; volumes with `railway_volume` and `railway_volume_instance`.
 
 ## Example Usage
 
@@ -27,44 +27,9 @@ resource "railway_service" "example" {
 - `name` (String) Name of the service.
 - `project_id` (String) Identifier of the project the service belongs to.
 
-### Optional
-
-- `config_path` (String, Deprecated) Path to the Railway config file. Conflicts with `source_image`.
-- `cron_schedule` (String, Deprecated) Cron schedule of the service. Only allowed when total number of replicas across all regions is `1`.
-- `regions` (Attributes List, Deprecated) Regions with replicas to deploy service in. (see [below for nested schema](#nestedatt--regions))
-- `root_directory` (String, Deprecated) Directory to user for the service. Conflicts with `source_image`.
-- `source_image` (String, Deprecated) Source image of the service. Conflicts with `source_repo`, `source_repo_branch`, `root_directory` and `config_path`.
-- `source_image_registry_password` (String, Sensitive, Deprecated) Private Docker registry credentials.
-- `source_image_registry_username` (String, Deprecated) Private Docker registry credentials.
-- `source_repo` (String, Deprecated) Source repository of the service. Conflicts with `source_image`.
-- `source_repo_branch` (String, Deprecated) Source repository branch to be used with `source_repo`. Must be specified if `source_repo` is specified.
-- `volume` (Attributes, Deprecated) Volume connected to the service. (see [below for nested schema](#nestedatt--volume))
-
 ### Read-Only
 
 - `id` (String) Identifier of the service.
-
-<a id="nestedatt--regions"></a>
-### Nested Schema for `regions`
-
-Optional:
-
-- `num_replicas` (Number) Number of replicas to deploy. **Default** `1`.
-- `region` (String) Region to deploy in.
-
-
-<a id="nestedatt--volume"></a>
-### Nested Schema for `volume`
-
-Required:
-
-- `mount_path` (String) Mount path of the volume.
-- `name` (String) Name of the volume.
-
-Read-Only:
-
-- `id` (String) Identifier of the volume.
-- `size` (Number) Size of the volume in MB.
 
 ## Import
 

@@ -95,9 +95,14 @@ resource "railway_project" "test_clone" {
 }
 
 resource "railway_service" "clone_source" {
-  name         = "clone-source"
-  project_id   = railway_project.test_clone.id
-  source_image = "traefik/whoami:v1.10"
+  name       = "clone-source"
+  project_id = railway_project.test_clone.id
+}
+
+resource "railway_service_instance" "clone_source" {
+  environment_id = railway_project.test_clone.default_environment.id
+  service_id     = railway_service.clone_source.id
+  source_image   = "traefik/whoami:v1.10"
 }
 
 resource "railway_environment" "test" {
@@ -106,7 +111,7 @@ resource "railway_environment" "test" {
   source_environment_id = railway_project.test_clone.default_environment.id
   skip_initial_deploys  = true
 
-  depends_on = [railway_service.clone_source]
+  depends_on = [railway_service_instance.clone_source]
 }
 `, projectName, name)
 }
