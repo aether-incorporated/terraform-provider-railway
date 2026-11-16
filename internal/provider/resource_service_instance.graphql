@@ -73,3 +73,29 @@ query getEnvironmentServiceInstances(
     }
   }
 }
+
+query getServiceInstanceEgressGateways(
+  $environmentId: String!
+  $serviceId: String!
+) {
+  egressGateways(environmentId: $environmentId, serviceId: $serviceId) {
+    ipv4
+    region
+  }
+}
+
+# @genqlient(for: "EgressGatewayCreateInput.region", omitempty: true, pointer: true)
+mutation createServiceInstanceEgressGateway(
+  $input: EgressGatewayCreateInput!
+) {
+  egressGatewayAssociationCreate(input: $input) {
+    ipv4
+    region
+  }
+}
+
+mutation clearServiceInstanceEgressGateways(
+  $input: EgressGatewayServiceTargetInput!
+) {
+  egressGatewayAssociationsClear(input: $input)
+}

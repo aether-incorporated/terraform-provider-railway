@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Features
+
+- `railway_service_instance` gains `static_egress_enabled` and the computed `static_egress_ips`, so a service's static outbound addresses can be switched on and fed straight into a firewall allowlist such as an AWS security group. The default is `false`, so applying a configuration that omits it releases static egress that was enabled in the dashboard.
+
 ## 0.1.0
 
 First release of this fork. Versioning restarts here, so this entry describes the state of the provider rather than replaying the upstream history that produced it.

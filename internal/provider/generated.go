@@ -132,6 +132,32 @@ func (v *CustomDomainStatusDnsRecordsDNSRecords) GetRequiredValue() string { ret
 // GetZone returns CustomDomainStatusDnsRecordsDNSRecords.Zone, and is useful for accessing the field via an interface.
 func (v *CustomDomainStatusDnsRecordsDNSRecords) GetZone() string { return v.Zone }
 
+type EgressGatewayCreateInput struct {
+	EnvironmentId string  `json:"environmentId"`
+	Region        *string `json:"region,omitempty"`
+	ServiceId     string  `json:"serviceId"`
+}
+
+// GetEnvironmentId returns EgressGatewayCreateInput.EnvironmentId, and is useful for accessing the field via an interface.
+func (v *EgressGatewayCreateInput) GetEnvironmentId() string { return v.EnvironmentId }
+
+// GetRegion returns EgressGatewayCreateInput.Region, and is useful for accessing the field via an interface.
+func (v *EgressGatewayCreateInput) GetRegion() *string { return v.Region }
+
+// GetServiceId returns EgressGatewayCreateInput.ServiceId, and is useful for accessing the field via an interface.
+func (v *EgressGatewayCreateInput) GetServiceId() string { return v.ServiceId }
+
+type EgressGatewayServiceTargetInput struct {
+	EnvironmentId string `json:"environmentId"`
+	ServiceId     string `json:"serviceId"`
+}
+
+// GetEnvironmentId returns EgressGatewayServiceTargetInput.EnvironmentId, and is useful for accessing the field via an interface.
+func (v *EgressGatewayServiceTargetInput) GetEnvironmentId() string { return v.EnvironmentId }
+
+// GetServiceId returns EgressGatewayServiceTargetInput.ServiceId, and is useful for accessing the field via an interface.
+func (v *EgressGatewayServiceTargetInput) GetServiceId() string { return v.ServiceId }
+
 // Environment includes the GraphQL fields of Environment requested by the fragment Environment.
 type Environment struct {
 	Id        string `json:"id"`
@@ -984,6 +1010,16 @@ func (v *VolumeVolumeInstancesVolumeVolumeInstancesConnectionEdgesVolumeVolumeIn
 	return v.SizeMB
 }
 
+// __clearServiceInstanceEgressGatewaysInput is used internally by genqlient
+type __clearServiceInstanceEgressGatewaysInput struct {
+	Input EgressGatewayServiceTargetInput `json:"input"`
+}
+
+// GetInput returns __clearServiceInstanceEgressGatewaysInput.Input, and is useful for accessing the field via an interface.
+func (v *__clearServiceInstanceEgressGatewaysInput) GetInput() EgressGatewayServiceTargetInput {
+	return v.Input
+}
+
 // __commitEnvironmentPatchInput is used internally by genqlient
 type __commitEnvironmentPatchInput struct {
 	EnvironmentId string                    `json:"environmentId"`
@@ -1071,6 +1107,16 @@ type __createServiceInput struct {
 
 // GetInput returns __createServiceInput.Input, and is useful for accessing the field via an interface.
 func (v *__createServiceInput) GetInput() ServiceCreateInput { return v.Input }
+
+// __createServiceInstanceEgressGatewayInput is used internally by genqlient
+type __createServiceInstanceEgressGatewayInput struct {
+	Input EgressGatewayCreateInput `json:"input"`
+}
+
+// GetInput returns __createServiceInstanceEgressGatewayInput.Input, and is useful for accessing the field via an interface.
+func (v *__createServiceInstanceEgressGatewayInput) GetInput() EgressGatewayCreateInput {
+	return v.Input
+}
 
 // __createTcpProxyInput is used internally by genqlient
 type __createTcpProxyInput struct {
@@ -1327,6 +1373,18 @@ type __getServiceInput struct {
 
 // GetId returns __getServiceInput.Id, and is useful for accessing the field via an interface.
 func (v *__getServiceInput) GetId() string { return v.Id }
+
+// __getServiceInstanceEgressGatewaysInput is used internally by genqlient
+type __getServiceInstanceEgressGatewaysInput struct {
+	EnvironmentId string `json:"environmentId"`
+	ServiceId     string `json:"serviceId"`
+}
+
+// GetEnvironmentId returns __getServiceInstanceEgressGatewaysInput.EnvironmentId, and is useful for accessing the field via an interface.
+func (v *__getServiceInstanceEgressGatewaysInput) GetEnvironmentId() string { return v.EnvironmentId }
+
+// GetServiceId returns __getServiceInstanceEgressGatewaysInput.ServiceId, and is useful for accessing the field via an interface.
+func (v *__getServiceInstanceEgressGatewaysInput) GetServiceId() string { return v.ServiceId }
 
 // __getServiceInstanceInput is used internally by genqlient
 type __getServiceInstanceInput struct {
@@ -1611,6 +1669,17 @@ type __upsertVariableInput struct {
 
 // GetInput returns __upsertVariableInput.Input, and is useful for accessing the field via an interface.
 func (v *__upsertVariableInput) GetInput() VariableUpsertInput { return v.Input }
+
+// clearServiceInstanceEgressGatewaysResponse is returned by clearServiceInstanceEgressGateways on success.
+type clearServiceInstanceEgressGatewaysResponse struct {
+	// Clear all egress gateway associations for a service instance
+	EgressGatewayAssociationsClear bool `json:"egressGatewayAssociationsClear"`
+}
+
+// GetEgressGatewayAssociationsClear returns clearServiceInstanceEgressGatewaysResponse.EgressGatewayAssociationsClear, and is useful for accessing the field via an interface.
+func (v *clearServiceInstanceEgressGatewaysResponse) GetEgressGatewayAssociationsClear() bool {
+	return v.EgressGatewayAssociationsClear
+}
 
 // commitEnvironmentPatchResponse is returned by commitEnvironmentPatch on success.
 type commitEnvironmentPatchResponse struct {
@@ -2230,6 +2299,33 @@ func (v *createServiceDomainServiceDomainCreateServiceDomain) __premarshalJSON()
 	retval.EnvironmentId = v.ServiceDomain.EnvironmentId
 	retval.ServiceId = v.ServiceDomain.ServiceId
 	return &retval, nil
+}
+
+// createServiceInstanceEgressGatewayEgressGatewayAssociationCreateEgressGateway includes the requested fields of the GraphQL type EgressGateway.
+type createServiceInstanceEgressGatewayEgressGatewayAssociationCreateEgressGateway struct {
+	Ipv4   string `json:"ipv4"`
+	Region string `json:"region"`
+}
+
+// GetIpv4 returns createServiceInstanceEgressGatewayEgressGatewayAssociationCreateEgressGateway.Ipv4, and is useful for accessing the field via an interface.
+func (v *createServiceInstanceEgressGatewayEgressGatewayAssociationCreateEgressGateway) GetIpv4() string {
+	return v.Ipv4
+}
+
+// GetRegion returns createServiceInstanceEgressGatewayEgressGatewayAssociationCreateEgressGateway.Region, and is useful for accessing the field via an interface.
+func (v *createServiceInstanceEgressGatewayEgressGatewayAssociationCreateEgressGateway) GetRegion() string {
+	return v.Region
+}
+
+// createServiceInstanceEgressGatewayResponse is returned by createServiceInstanceEgressGateway on success.
+type createServiceInstanceEgressGatewayResponse struct {
+	// Create a new egress gateway association for a service instance
+	EgressGatewayAssociationCreate []createServiceInstanceEgressGatewayEgressGatewayAssociationCreateEgressGateway `json:"egressGatewayAssociationCreate"`
+}
+
+// GetEgressGatewayAssociationCreate returns createServiceInstanceEgressGatewayResponse.EgressGatewayAssociationCreate, and is useful for accessing the field via an interface.
+func (v *createServiceInstanceEgressGatewayResponse) GetEgressGatewayAssociationCreate() []createServiceInstanceEgressGatewayEgressGatewayAssociationCreateEgressGateway {
+	return v.EgressGatewayAssociationCreate
 }
 
 // createServiceResponse is returned by createService on success.
@@ -3659,6 +3755,31 @@ type getProjectResponse struct {
 // GetProject returns getProjectResponse.Project, and is useful for accessing the field via an interface.
 func (v *getProjectResponse) GetProject() getProjectProject { return v.Project }
 
+// getServiceInstanceEgressGatewaysEgressGatewaysEgressGateway includes the requested fields of the GraphQL type EgressGateway.
+type getServiceInstanceEgressGatewaysEgressGatewaysEgressGateway struct {
+	Ipv4   string `json:"ipv4"`
+	Region string `json:"region"`
+}
+
+// GetIpv4 returns getServiceInstanceEgressGatewaysEgressGatewaysEgressGateway.Ipv4, and is useful for accessing the field via an interface.
+func (v *getServiceInstanceEgressGatewaysEgressGatewaysEgressGateway) GetIpv4() string { return v.Ipv4 }
+
+// GetRegion returns getServiceInstanceEgressGatewaysEgressGatewaysEgressGateway.Region, and is useful for accessing the field via an interface.
+func (v *getServiceInstanceEgressGatewaysEgressGatewaysEgressGateway) GetRegion() string {
+	return v.Region
+}
+
+// getServiceInstanceEgressGatewaysResponse is returned by getServiceInstanceEgressGateways on success.
+type getServiceInstanceEgressGatewaysResponse struct {
+	// All egress gateways assigned to a service instance
+	EgressGateways []getServiceInstanceEgressGatewaysEgressGatewaysEgressGateway `json:"egressGateways"`
+}
+
+// GetEgressGateways returns getServiceInstanceEgressGatewaysResponse.EgressGateways, and is useful for accessing the field via an interface.
+func (v *getServiceInstanceEgressGatewaysResponse) GetEgressGateways() []getServiceInstanceEgressGatewaysEgressGatewaysEgressGateway {
+	return v.EgressGateways
+}
+
 // getServiceInstanceProjectEnvironmentsProject includes the requested fields of the GraphQL type Project.
 type getServiceInstanceProjectEnvironmentsProject struct {
 	Environments getServiceInstanceProjectEnvironmentsProjectEnvironmentsProjectEnvironmentsConnection `json:"environments"`
@@ -4898,6 +5019,36 @@ type upsertVariableResponse struct {
 // GetVariableUpsert returns upsertVariableResponse.VariableUpsert, and is useful for accessing the field via an interface.
 func (v *upsertVariableResponse) GetVariableUpsert() bool { return v.VariableUpsert }
 
+func clearServiceInstanceEgressGateways(
+	ctx context.Context,
+	client graphql.Client,
+	input EgressGatewayServiceTargetInput,
+) (*clearServiceInstanceEgressGatewaysResponse, error) {
+	req := &graphql.Request{
+		OpName: "clearServiceInstanceEgressGateways",
+		Query: `
+mutation clearServiceInstanceEgressGateways ($input: EgressGatewayServiceTargetInput!) {
+	egressGatewayAssociationsClear(input: $input)
+}
+`,
+		Variables: &__clearServiceInstanceEgressGatewaysInput{
+			Input: input,
+		},
+	}
+	var err error
+
+	var data clearServiceInstanceEgressGatewaysResponse
+	resp := &graphql.Response{Data: &data}
+
+	err = client.MakeRequest(
+		ctx,
+		req,
+		resp,
+	)
+
+	return &data, err
+}
+
 func commitEnvironmentPatch(
 	ctx context.Context,
 	client graphql.Client,
@@ -5248,6 +5399,39 @@ fragment ServiceDomain on ServiceDomain {
 	var err error
 
 	var data createServiceDomainResponse
+	resp := &graphql.Response{Data: &data}
+
+	err = client.MakeRequest(
+		ctx,
+		req,
+		resp,
+	)
+
+	return &data, err
+}
+
+func createServiceInstanceEgressGateway(
+	ctx context.Context,
+	client graphql.Client,
+	input EgressGatewayCreateInput,
+) (*createServiceInstanceEgressGatewayResponse, error) {
+	req := &graphql.Request{
+		OpName: "createServiceInstanceEgressGateway",
+		Query: `
+mutation createServiceInstanceEgressGateway ($input: EgressGatewayCreateInput!) {
+	egressGatewayAssociationCreate(input: $input) {
+		ipv4
+		region
+	}
+}
+`,
+		Variables: &__createServiceInstanceEgressGatewayInput{
+			Input: input,
+		},
+	}
+	var err error
+
+	var data createServiceInstanceEgressGatewayResponse
 	resp := &graphql.Response{Data: &data}
 
 	err = client.MakeRequest(
@@ -6307,6 +6491,41 @@ query getServiceInstance ($environmentId: String!, $serviceId: String!) {
 	var err error
 
 	var data getServiceInstanceResponse
+	resp := &graphql.Response{Data: &data}
+
+	err = client.MakeRequest(
+		ctx,
+		req,
+		resp,
+	)
+
+	return &data, err
+}
+
+func getServiceInstanceEgressGateways(
+	ctx context.Context,
+	client graphql.Client,
+	environmentId string,
+	serviceId string,
+) (*getServiceInstanceEgressGatewaysResponse, error) {
+	req := &graphql.Request{
+		OpName: "getServiceInstanceEgressGateways",
+		Query: `
+query getServiceInstanceEgressGateways ($environmentId: String!, $serviceId: String!) {
+	egressGateways(environmentId: $environmentId, serviceId: $serviceId) {
+		ipv4
+		region
+	}
+}
+`,
+		Variables: &__getServiceInstanceEgressGatewaysInput{
+			EnvironmentId: environmentId,
+			ServiceId:     serviceId,
+		},
+	}
+	var err error
+
+	var data getServiceInstanceEgressGatewaysResponse
 	resp := &graphql.Response{Data: &data}
 
 	err = client.MakeRequest(

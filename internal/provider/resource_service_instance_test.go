@@ -74,6 +74,8 @@ func TestAccServiceInstanceResourceDefault(t *testing.T) {
 					resource.TestCheckResourceAttr("railway_service_instance.test", "memory_gb", "0.5"),
 					resource.TestCheckResourceAttr("railway_service_instance.test", "regions.europe-west4-drams3a.num_replicas", "1"),
 					resource.TestCheckResourceAttr("railway_service_instance.test", "effective_regions.europe-west4-drams3a.num_replicas", "1"),
+					resource.TestCheckResourceAttr("railway_service_instance.test", "static_egress_enabled", "false"),
+					resource.TestCheckResourceAttr("railway_service_instance.test", "static_egress_ips.#", "0"),
 					testAccCheckSiblingServiceInstance,
 				),
 			},
