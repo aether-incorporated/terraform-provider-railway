@@ -52,7 +52,7 @@ jobs:
     name: Terraform Provider Acceptance Test
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     env:
       HAS_RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN != '' }}
     steps:
@@ -79,5 +79,7 @@ jobs:
           TF_ACC: ${{ env.HAS_RAILWAY_TOKEN == 'true' && '1' || '' }}
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_TEST_WORKSPACE_ID: ${{ vars.RAILWAY_TEST_WORKSPACE_ID }}
-        run: go test -v -cover ./internal/provider/
-        timeout-minutes: 10
+          RAILWAY_TEST_PROJECT_ID: ${{ vars.RAILWAY_TEST_PROJECT_ID }}
+        # Project creation is rate limited to one per 30 seconds, so the run is slow.
+        run: go test -v -cover -timeout 25m ./internal/provider/
+        timeout-minutes: 25

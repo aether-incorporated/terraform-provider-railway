@@ -17,7 +17,7 @@ func TestAccVariableCollectionResourceDefault(t *testing.T) {
 				Config: testAccVariableCollectionResourceConfigDefault("one", "two", "three"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckFixtureAttr("railway_variable_collection.test", "id", "{service}:{environment}:VALUE_A:VALUE_B:VALUE_C"),
-					resource.TestCheckResourceAttrPair("railway_variable_collection.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_variable_collection.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_variable_collection.test", "service_id", "railway_service.fixture", "id"),
 					resource.TestCheckResourceAttr("railway_variable_collection.test", "variables.0.name", "VALUE_A"),
 					resource.TestCheckResourceAttr("railway_variable_collection.test", "variables.0.value", "one"),
@@ -31,7 +31,7 @@ func TestAccVariableCollectionResourceDefault(t *testing.T) {
 			{
 				ResourceName:      "railway_variable_collection.test",
 				ImportState:       true,
-				ImportStateIdFunc: testAccFixtureImportStateId("{service}:staging:VALUE_A:VALUE_B:VALUE_C"),
+				ImportStateIdFunc: testAccFixtureImportStateId("{service}:{environment_name}:VALUE_A:VALUE_B:VALUE_C"),
 				ImportStateVerify: true,
 			},
 			// Update and Read testing
@@ -39,7 +39,7 @@ func TestAccVariableCollectionResourceDefault(t *testing.T) {
 				Config: testAccVariableCollectionResourceConfigDefault("four", "five", "six"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckFixtureAttr("railway_variable_collection.test", "id", "{service}:{environment}:VALUE_A:VALUE_B:VALUE_C"),
-					resource.TestCheckResourceAttrPair("railway_variable_collection.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_variable_collection.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_variable_collection.test", "service_id", "railway_service.fixture", "id"),
 					resource.TestCheckResourceAttr("railway_variable_collection.test", "variables.0.name", "VALUE_A"),
 					resource.TestCheckResourceAttr("railway_variable_collection.test", "variables.0.value", "four"),
@@ -53,7 +53,7 @@ func TestAccVariableCollectionResourceDefault(t *testing.T) {
 			{
 				ResourceName:      "railway_variable_collection.test",
 				ImportState:       true,
-				ImportStateIdFunc: testAccFixtureImportStateId("{service}:staging:VALUE_A:VALUE_B:VALUE_C"),
+				ImportStateIdFunc: testAccFixtureImportStateId("{service}:{environment_name}:VALUE_A:VALUE_B:VALUE_C"),
 				ImportStateVerify: true,
 			},
 			// Update and Read testing
@@ -61,7 +61,7 @@ func TestAccVariableCollectionResourceDefault(t *testing.T) {
 				Config: testAccVariableCollectionResourceConfigNonDefault("four", "five", "six"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckFixtureAttr("railway_variable_collection.test", "id", "{service}:{environment}:VALUE_B:VALUE_C:VALUE_D"),
-					resource.TestCheckResourceAttrPair("railway_variable_collection.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_variable_collection.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_variable_collection.test", "service_id", "railway_service.fixture", "id"),
 					resource.TestCheckResourceAttr("railway_variable_collection.test", "variables.0.name", "VALUE_B"),
 					resource.TestCheckResourceAttr("railway_variable_collection.test", "variables.0.value", "four"),
@@ -75,7 +75,7 @@ func TestAccVariableCollectionResourceDefault(t *testing.T) {
 			{
 				ResourceName:      "railway_variable_collection.test",
 				ImportState:       true,
-				ImportStateIdFunc: testAccFixtureImportStateId("{service}:staging:VALUE_B:VALUE_C:VALUE_D"),
+				ImportStateIdFunc: testAccFixtureImportStateId("{service}:{environment_name}:VALUE_B:VALUE_C:VALUE_D"),
 				ImportStateVerify: true,
 			},
 			// Delete testing automatically occurs in TestCase
@@ -86,7 +86,7 @@ func TestAccVariableCollectionResourceDefault(t *testing.T) {
 func testAccVariableCollectionResourceConfigDefault(valueA, valueB, valueC string) string {
 	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_variable_collection" "test" {
-  environment_id = railway_project.fixture.default_environment.id
+  environment_id = railway_environment.fixture.id
   service_id = railway_service.fixture.id
 
   variables = [
@@ -110,7 +110,7 @@ resource "railway_variable_collection" "test" {
 func testAccVariableCollectionResourceConfigNonDefault(valueB, valueC, valueD string) string {
 	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_variable_collection" "test" {
-  environment_id = railway_project.fixture.default_environment.id
+  environment_id = railway_environment.fixture.id
   service_id = railway_service.fixture.id
 
   variables = [

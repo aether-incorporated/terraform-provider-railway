@@ -25,9 +25,9 @@ func TestAccServiceDomainResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service_domain.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service_domain.test", "subdomain", subdomain),
-					resource.TestCheckResourceAttrPair("railway_service_domain.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_service_domain.test", "service_id", "railway_service.fixture", "id"),
-					resource.TestCheckResourceAttrPair("railway_service_domain.test", "project_id", "railway_project.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "project_id", "railway_environment.fixture", "project_id"),
 					resource.TestCheckResourceAttr("railway_service_domain.test", "domain", subdomain+".up.railway.app"),
 					resource.TestCheckResourceAttr("railway_service_domain.test", "suffix", "up.railway.app"),
 				),
@@ -36,7 +36,7 @@ func TestAccServiceDomainResourceDefault(t *testing.T) {
 			{
 				ResourceName:      "railway_service_domain.test",
 				ImportState:       true,
-				ImportStateIdFunc: testAccFixtureImportStateId("{service}:staging:" + subdomain + ".up.railway.app"),
+				ImportStateIdFunc: testAccFixtureImportStateId("{service}:{environment_name}:" + subdomain + ".up.railway.app"),
 				ImportStateVerify: true,
 			},
 			// Update with default values
@@ -45,9 +45,9 @@ func TestAccServiceDomainResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service_domain.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service_domain.test", "subdomain", subdomain),
-					resource.TestCheckResourceAttrPair("railway_service_domain.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_service_domain.test", "service_id", "railway_service.fixture", "id"),
-					resource.TestCheckResourceAttrPair("railway_service_domain.test", "project_id", "railway_project.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "project_id", "railway_environment.fixture", "project_id"),
 					resource.TestCheckResourceAttr("railway_service_domain.test", "domain", subdomain+".up.railway.app"),
 					resource.TestCheckResourceAttr("railway_service_domain.test", "suffix", "up.railway.app"),
 				),
@@ -58,9 +58,9 @@ func TestAccServiceDomainResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_service_domain.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_service_domain.test", "subdomain", secondSubdomain),
-					resource.TestCheckResourceAttrPair("railway_service_domain.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_service_domain.test", "service_id", "railway_service.fixture", "id"),
-					resource.TestCheckResourceAttrPair("railway_service_domain.test", "project_id", "railway_project.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_service_domain.test", "project_id", "railway_environment.fixture", "project_id"),
 					resource.TestCheckResourceAttr("railway_service_domain.test", "domain", secondSubdomain+".up.railway.app"),
 					resource.TestCheckResourceAttr("railway_service_domain.test", "suffix", "up.railway.app"),
 				),
@@ -69,7 +69,7 @@ func TestAccServiceDomainResourceDefault(t *testing.T) {
 			{
 				ResourceName:      "railway_service_domain.test",
 				ImportState:       true,
-				ImportStateIdFunc: testAccFixtureImportStateId("{service}:staging:" + secondSubdomain + ".up.railway.app"),
+				ImportStateIdFunc: testAccFixtureImportStateId("{service}:{environment_name}:" + secondSubdomain + ".up.railway.app"),
 				ImportStateVerify: true,
 			},
 			// Delete testing automatically occurs in TestCase
@@ -118,7 +118,7 @@ func testAccServiceDomainResourceConfigDefault(name string) string {
 	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_service_domain" "test" {
   subdomain = "%s"
-  environment_id = railway_project.fixture.default_environment.id
+  environment_id = railway_environment.fixture.id
   service_id = railway_service.fixture.id
 }
 `, name)

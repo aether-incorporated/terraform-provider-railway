@@ -37,14 +37,15 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 
 *Note:* Acceptance tests create real resources, and often cost money to run.
 
-Run them against a dedicated Railway workspace, never one holding real projects. Every test creates the projects it needs in that workspace and deletes them when it finishes; a run that dies partway can leave `tf-acc-*` projects behind to delete by hand. Set:
+Run them against a dedicated Railway workspace, never one holding real projects, with one empty project in it that the tests share. Railway allows one new project per workspace every 30 seconds, so tests of resources that attach to a service create their own environment and service inside the shared project instead of a project each. Tests of project-level behaviour still create projects, and the provider waits out the rate limit, so a full run takes several minutes. A run that dies partway can leave `tf-acc-*` projects, or environments in the shared project, behind to delete by hand. Set:
 
-| Variable                    | Value                                                                  |
-| --------------------------- | ---------------------------------------------------------------------- |
-| `RAILWAY_TOKEN`             | A token for the test workspace. A workspace-scoped token is safest.    |
-| `RAILWAY_TEST_WORKSPACE_ID` | The test workspace's id                                                |
+| Variable                    | Value                                                               |
+| --------------------------- | ------------------------------------------------------------------- |
+| `RAILWAY_TOKEN`             | A token for the test workspace. A workspace-scoped token is safest. |
+| `RAILWAY_TEST_WORKSPACE_ID` | The test workspace's id                                             |
+| `RAILWAY_TEST_PROJECT_ID`   | The shared project's id                                             |
 
-In CI, `RAILWAY_TOKEN` is a repository secret and `RAILWAY_TEST_WORKSPACE_ID` a repository variable. Without the secret, the acceptance tests are skipped and only the unit tests run.
+In CI, `RAILWAY_TOKEN` is a repository secret and the two ids are repository variables. Without the secret, the acceptance tests are skipped and only the unit tests run.
 
 ```shell
 make testacc

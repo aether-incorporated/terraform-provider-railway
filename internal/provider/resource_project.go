@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strings"
+	"time"
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -193,7 +195,7 @@ func (r *ProjectResource) Create(ctx context.Context, req resource.CreateRequest
 
 	input.DefaultEnvironmentName = defaultEnvironmentData.Name.ValueString()
 
-	response, err := createProject(ctx, *r.client, input)
+	response, err := createProjectWithRetry(ctx, *r.client, input, sleepWithContext)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create project, got error: %s", err))
@@ -376,4 +378,46 @@ func defaultEnvironmentForProject(ctx context.Context, client graphql.Client, pr
 	})
 
 	return &project, &project.Environments.Edges[0].Node, nil
+}
+
+// Railway allows one new project per workspace every 30 seconds and refuses the rest without
+// creating anything, so a refused create is safe to repeat.
+const (
+	projectCreateRetryInterval = 10 * time.Second
+	projectCreateRetryBudget   = 90 * time.Second
+	projectCreateRateLimitText = "creating projects too quickly"
+)
+
+func createProjectWithRetry(
+	ctx context.Context,
+	client graphql.Client,
+	input ProjectCreateInput,
+	sleep func(context.Context, time.Duration) error,
+) (*createProjectResponse, error) {
+	var waited time.Duration
+	for {
+		response, err := createProject(ctx, client, input)
+		if err == nil || !strings.Contains(err.Error(), projectCreateRateLimitText) {
+			return response, err
+		}
+		if waited+projectCreateRetryInterval > projectCreateRetryBudget {
+			return response, err
+		}
+		tflog.Debug(ctx, "project creation rate limited, retrying", map[string]interface{}{"retry_in": projectCreateRetryInterval.String()})
+		if sleepErr := sleep(ctx, projectCreateRetryInterval); sleepErr != nil {
+			return response, sleepErr
+		}
+		waited += projectCreateRetryInterval
+	}
+}
+
+func sleepWithContext(ctx context.Context, duration time.Duration) error {
+	timer := time.NewTimer(duration)
+	defer timer.Stop()
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-timer.C:
+		return nil
+	}
 }

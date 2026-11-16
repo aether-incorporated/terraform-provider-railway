@@ -10,6 +10,7 @@ import (
 	"github.com/Khan/genqlient/graphql"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
+	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
@@ -22,47 +23,51 @@ var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 	"railway": providerserver.NewProtocol6WithError(New("test")()),
 }
 
-// Acceptance tests create every project they use inside a dedicated Railway workspace and
-// delete it afterwards, so they never touch real projects. The workspace id is set on each
-// project because an account token can see several workspaces.
-var testAccWorkspaceId = os.Getenv("RAILWAY_TEST_WORKSPACE_ID")
+// Acceptance tests run inside a dedicated Railway workspace, so they never touch real projects.
+// Tests of resources that attach to a service share one long-lived project in it and create
+// their own environment and service there, because Railway allows only one new project per
+// workspace every 30 seconds. Tests of project-level behaviour still create their own project,
+// pinned to the workspace because an account token can see several.
+var (
+	testAccWorkspaceId = os.Getenv("RAILWAY_TEST_WORKSPACE_ID")
+	testAccProjectId   = os.Getenv("RAILWAY_TEST_PROJECT_ID")
+
+	// Fixed for the whole run, because every test step re-renders its configuration and a
+	// changing name would replace the environment between steps. Random across runs, so an
+	// environment left behind by an interrupted run never collides with the next one.
+	testAccFixtureEnvironmentName = "tf-acc-" + acctest.RandStringFromCharSet(8, acctest.CharSetAlpha)
+)
 
 func testAccPreCheck(t *testing.T) {
-	for _, name := range []string{"RAILWAY_TOKEN", "RAILWAY_TEST_WORKSPACE_ID"} {
+	for _, name := range []string{"RAILWAY_TOKEN", "RAILWAY_TEST_WORKSPACE_ID", "RAILWAY_TEST_PROJECT_ID"} {
 		if os.Getenv(name) == "" {
 			t.Fatalf("%s must be set for acceptance tests", name)
 		}
 	}
 }
 
-// testAccFixtureConfig declares a throwaway project, whose default environment is named
-// `staging`, and one service in it, for tests of resources that attach to a service. The
-// name is fixed because every test step re-renders the configuration, and a changing name
-// would replace the project between steps; Railway does not require unique project names.
+// testAccFixtureConfig declares a throwaway environment in the shared project and one service
+// in it, for tests of resources that attach to a service.
 func testAccFixtureConfig() string {
 	return fmt.Sprintf(`
-resource "railway_project" "fixture" {
-  name         = "tf-acc-fixture"
-  workspace_id = "%s"
-
-  default_environment = {
-    name = "staging"
-  }
+resource "railway_environment" "fixture" {
+  name       = "%s"
+  project_id = "%s"
 }
 
 resource "railway_service" "fixture" {
   name       = "fixture"
-  project_id = railway_project.fixture.id
+  project_id = railway_environment.fixture.project_id
 }
-`, testAccWorkspaceId)
+`, testAccFixtureEnvironmentName, testAccProjectId)
 }
 
-// fillFixtureTemplate replaces `{project}`, `{environment}` and `{service}` with the ids the
-// fixture resources received in state.
+// fillFixtureTemplate replaces `{project}`, `{environment}`, `{environment_name}` and
+// `{service}` with the values the fixture resources received in state.
 func fillFixtureTemplate(state *terraform.State, template string) (string, error) {
-	project, ok := state.RootModule().Resources["railway_project.fixture"]
+	environment, ok := state.RootModule().Resources["railway_environment.fixture"]
 	if !ok {
-		return "", fmt.Errorf("fixture project is missing from state")
+		return "", fmt.Errorf("fixture environment is missing from state")
 	}
 	service, ok := state.RootModule().Resources["railway_service.fixture"]
 	if !ok {
@@ -70,8 +75,9 @@ func fillFixtureTemplate(state *terraform.State, template string) (string, error
 	}
 
 	replacer := strings.NewReplacer(
-		"{project}", project.Primary.ID,
-		"{environment}", project.Primary.Attributes["default_environment.id"],
+		"{project}", environment.Primary.Attributes["project_id"],
+		"{environment_name}", environment.Primary.Attributes["name"],
+		"{environment}", environment.Primary.ID,
 		"{service}", service.Primary.ID,
 	)
 	return replacer.Replace(template), nil

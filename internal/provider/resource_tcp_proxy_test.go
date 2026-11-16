@@ -19,7 +19,7 @@ func TestAccTcpProxyResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_tcp_proxy.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_tcp_proxy.test", "application_port", "6379"),
-					resource.TestCheckResourceAttrPair("railway_tcp_proxy.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_tcp_proxy.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_tcp_proxy.test", "service_id", "railway_service.fixture", "id"),
 					resource.TestCheckResourceAttrSet("railway_tcp_proxy.test", "proxy_port"),
 					resource.TestCheckResourceAttrSet("railway_tcp_proxy.test", "domain"),
@@ -38,7 +38,7 @@ func TestAccTcpProxyResourceDefault(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_tcp_proxy.test", "id", uuidRegex()),
 					resource.TestCheckResourceAttr("railway_tcp_proxy.test", "application_port", "6379"),
-					resource.TestCheckResourceAttrPair("railway_tcp_proxy.test", "environment_id", "railway_project.fixture", "default_environment.id"),
+					resource.TestCheckResourceAttrPair("railway_tcp_proxy.test", "environment_id", "railway_environment.fixture", "id"),
 					resource.TestCheckResourceAttrPair("railway_tcp_proxy.test", "service_id", "railway_service.fixture", "id"),
 					resource.TestCheckResourceAttrSet("railway_tcp_proxy.test", "proxy_port"),
 					resource.TestCheckResourceAttrSet("railway_tcp_proxy.test", "domain"),
@@ -53,7 +53,7 @@ func testAccTcpProxyResourceConfigDefault(port int) string {
 	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_tcp_proxy" "test" {
   application_port = "%d"
-  environment_id = railway_project.fixture.default_environment.id
+  environment_id = railway_environment.fixture.id
   service_id = railway_service.fixture.id
 }
 `, port)

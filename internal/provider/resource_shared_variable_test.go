@@ -19,15 +19,15 @@ func TestAccSharedVariableResourceDefault(t *testing.T) {
 					testAccCheckFixtureAttr("railway_shared_variable.test", "id", "{project}:{environment}:API_KEY"),
 					resource.TestCheckResourceAttr("railway_shared_variable.test", "name", "API_KEY"),
 					resource.TestCheckResourceAttr("railway_shared_variable.test", "value", "1234567890"),
-					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "environment_id", "railway_project.fixture", "default_environment.id"),
-					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "project_id", "railway_project.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "environment_id", "railway_environment.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "project_id", "railway_environment.fixture", "project_id"),
 				),
 			},
 			// ImportState testing
 			{
 				ResourceName:      "railway_shared_variable.test",
 				ImportState:       true,
-				ImportStateIdFunc: testAccFixtureImportStateId("{project}:staging:API_KEY"),
+				ImportStateIdFunc: testAccFixtureImportStateId("{project}:{environment_name}:API_KEY"),
 				ImportStateVerify: true,
 			},
 			// Update with default values
@@ -37,8 +37,8 @@ func TestAccSharedVariableResourceDefault(t *testing.T) {
 					testAccCheckFixtureAttr("railway_shared_variable.test", "id", "{project}:{environment}:API_KEY"),
 					resource.TestCheckResourceAttr("railway_shared_variable.test", "name", "API_KEY"),
 					resource.TestCheckResourceAttr("railway_shared_variable.test", "value", "1234567890"),
-					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "environment_id", "railway_project.fixture", "default_environment.id"),
-					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "project_id", "railway_project.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "environment_id", "railway_environment.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "project_id", "railway_environment.fixture", "project_id"),
 				),
 			},
 			// Update and Read testing
@@ -48,15 +48,15 @@ func TestAccSharedVariableResourceDefault(t *testing.T) {
 					testAccCheckFixtureAttr("railway_shared_variable.test", "id", "{project}:{environment}:API_KEY"),
 					resource.TestCheckResourceAttr("railway_shared_variable.test", "name", "API_KEY"),
 					resource.TestCheckResourceAttr("railway_shared_variable.test", "value", "nice"),
-					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "environment_id", "railway_project.fixture", "default_environment.id"),
-					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "project_id", "railway_project.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "environment_id", "railway_environment.fixture", "id"),
+					resource.TestCheckResourceAttrPair("railway_shared_variable.test", "project_id", "railway_environment.fixture", "project_id"),
 				),
 			},
 			// ImportState testing
 			{
 				ResourceName:      "railway_shared_variable.test",
 				ImportState:       true,
-				ImportStateIdFunc: testAccFixtureImportStateId("{project}:staging:API_KEY"),
+				ImportStateIdFunc: testAccFixtureImportStateId("{project}:{environment_name}:API_KEY"),
 				ImportStateVerify: true,
 			},
 			// Delete testing automatically occurs in TestCase
@@ -69,8 +69,8 @@ func testAccSharedVariableResourceConfigDefault(value string) string {
 resource "railway_shared_variable" "test" {
   name = "API_KEY"
   value = "%s"
-  environment_id = railway_project.fixture.default_environment.id
-  project_id = railway_project.fixture.id
+  environment_id = railway_environment.fixture.id
+  project_id = railway_environment.fixture.project_id
 }
 `, value)
 }

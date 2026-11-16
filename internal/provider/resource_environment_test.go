@@ -11,33 +11,36 @@ import (
 )
 
 func TestAccEnvironmentResourceDefault(t *testing.T) {
+	// The environment lives in the shared project, so each run uses a fresh name.
+	name := "tf-acc-int-" + acctest.RandStringFromCharSet(8, acctest.CharSetAlpha)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccEnvironmentResourceConfigDefault("integration"),
+				Config: testAccEnvironmentResourceConfigDefault(name),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_environment.test", "id", uuidRegex()),
-					resource.TestCheckResourceAttr("railway_environment.test", "name", "integration"),
-					resource.TestCheckResourceAttrPair("railway_environment.test", "project_id", "railway_project.fixture", "id"),
+					resource.TestCheckResourceAttr("railway_environment.test", "name", name),
+					resource.TestCheckResourceAttrPair("railway_environment.test", "project_id", "railway_environment.fixture", "project_id"),
 				),
 			},
 			// ImportState testing
 			{
 				ResourceName:      "railway_environment.test",
 				ImportState:       true,
-				ImportStateIdFunc: testAccFixtureImportStateId("{project}:integration"),
+				ImportStateIdFunc: testAccFixtureImportStateId("{project}:" + name),
 				ImportStateVerify: true,
 			},
 			// Update with default values
 			{
-				Config: testAccEnvironmentResourceConfigDefault("integration"),
+				Config: testAccEnvironmentResourceConfigDefault(name),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("railway_environment.test", "id", uuidRegex()),
-					resource.TestCheckResourceAttr("railway_environment.test", "name", "integration"),
-					resource.TestCheckResourceAttrPair("railway_environment.test", "project_id", "railway_project.fixture", "id"),
+					resource.TestCheckResourceAttr("railway_environment.test", "name", name),
+					resource.TestCheckResourceAttrPair("railway_environment.test", "project_id", "railway_environment.fixture", "project_id"),
 				),
 			},
 			// Delete testing automatically occurs in TestCase
@@ -79,7 +82,7 @@ func testAccEnvironmentResourceConfigDefault(name string) string {
 	return testAccFixtureConfig() + fmt.Sprintf(`
 resource "railway_environment" "test" {
   name = "%s"
-  project_id = railway_project.fixture.id
+  project_id = railway_environment.fixture.project_id
 }
 `, name)
 }
