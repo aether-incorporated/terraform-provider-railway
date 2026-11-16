@@ -50,6 +50,38 @@ func TestExpandServiceInstanceEnvironmentPatchPreservesRegistryAndRemovesRegions
 	}
 }
 
+// Railway drops a service from the environment config once all its settings are cleared, and
+// a patch only re-attaches it when it is marked as created.
+func TestExpandServiceInstanceEnvironmentPatchReattachesDetachedService(t *testing.T) {
+	data := ServiceInstanceResourceModel{
+		ServiceId:     types.StringValue("service-id"),
+		RootDirectory: types.StringValue("/services/api"),
+	}
+
+	got := expandServiceInstanceEnvironmentPatch(data, nil, railway.EnvironmentConfig{
+		Services: map[string]railway.ServiceConfig{"other-service": {}},
+	})
+
+	if !got.Services["service-id"].IsCreated {
+		t.Fatal("expected a service missing from the environment config to be marked as created")
+	}
+}
+
+func TestExpandServiceInstanceEnvironmentPatchLeavesAttachedServiceAlone(t *testing.T) {
+	data := ServiceInstanceResourceModel{
+		ServiceId:     types.StringValue("service-id"),
+		RootDirectory: types.StringValue("/services/api"),
+	}
+
+	got := expandServiceInstanceEnvironmentPatch(data, nil, railway.EnvironmentConfig{
+		Services: map[string]railway.ServiceConfig{"service-id": {}},
+	})
+
+	if got.Services["service-id"].IsCreated {
+		t.Fatal("expected an attached service not to be marked as created")
+	}
+}
+
 func TestAccServiceInstanceResourceDefault(t *testing.T) {
 	projectName := "tf-acc-service-instance-" + acctest.RandStringFromCharSet(8, acctest.CharSetAlphaNum)
 

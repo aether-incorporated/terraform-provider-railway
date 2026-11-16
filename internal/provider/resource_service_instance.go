@@ -879,9 +879,14 @@ func expandServiceInstanceEnvironmentPatch(
 		}
 	}
 
+	// Railway drops a service from the environment config once all its settings are cleared, and
+	// a patch only re-attaches it when it is marked as created.
+	_, isAttached := current.Services[data.ServiceId.ValueString()]
+
 	return railway.EnvironmentConfig{
 		Services: map[string]railway.ServiceConfig{
 			data.ServiceId.ValueString(): {
+				IsCreated:  !isAttached,
 				ConfigFile: stringPointer(data.ConfigPath.ValueString()),
 				Source: &railway.ServiceSourceConfig{
 					Image:         stringPointer(data.SourceImage.ValueString()),
